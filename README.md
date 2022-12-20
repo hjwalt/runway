@@ -14,6 +14,7 @@ logger.Info("info", zap.String("some key", "some value"))
 
 inverse.Register("test-1-qualifier", func(ctx context.Context) (any, error) { return "test-1-value", nil })
 val, err := inverse.GetLast[string](context.Background(), "test-1-qualifier")
+val, err := inverse.GetAll[string](context.Background(), "test-1-qualifier")
 
 val := reflect.GetBool("false")
 ```
