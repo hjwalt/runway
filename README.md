@@ -113,11 +113,11 @@ Example:
 
 ```
 func MultiLevelInjector(ctx context.Context) (any, error) {
-	depA, err := inject.GetLast[DepA](ctx, "depAQualifier")
+	depA, err := inverse.GetLast[DepA](ctx, "depAQualifier")
 	if err != nil {
 		return nil, err
 	}
-	depB, err := inject.GetLast[DepB](ctx, "depBQualifier")
+	depB, err := inverse.GetLast[DepB](ctx, "depBQualifier")
 	if err != nil {
 		return nil, err
 	}
