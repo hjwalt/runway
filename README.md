@@ -34,7 +34,7 @@ However, as I worked with Golang, there are pieces of code that continues to get
 
 Some of it includes:
 
-1. Dependency inversion management
+1. Dependency inversion and configuration list parameter management
 2. Reflection utility functions
 3. Logging utility functions
 
@@ -84,15 +84,15 @@ At the moment, only `zap` is added.
 
 ### Reflect
 
-I do not nor I think I should use reflection often in Golang.
+I do not and I think I should not use reflection often in Golang.
 However, some type conversions to specific basic types are fairly common, and the utility helps with exactly that.
 
 It reduces the clutter of having multiple utility functions scattered all over the place.
-However, the way type conversions are done is very very specific, so do read the codes.
+However, the way type conversions are done are very very specific, so do read the codes.
 
 ### Inverse
 
-I have looked into dig, fx, and wire, if there are any more I should look at please add in the issues.
+I have looked into dig, fx, and wire, if there are any more I should look at please add in the issues or discussions.
 
 - Wire is impractical to use in multi integration complex set up (I used Kafka, Postgres, HTTP, and some other MQ integrations).
 - Dig is not recommended within Golang community due to excessive use of reflection.
