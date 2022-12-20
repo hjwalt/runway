@@ -101,6 +101,10 @@ func Fatal(message string, fields ...zap.Field) {
 	globalLogger.Fatal(message, fields...)
 }
 
+func Fatalf(message string, fields ...interface{}) {
+	globalSugar.Fatalf(message, fields...)
+}
+
 func FatalErr(message string, err error) {
 	globalLogger.Fatal(message, zap.Error(err))
 }
