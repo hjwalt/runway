@@ -25,6 +25,7 @@ For more functions do read the codebase.
 
 1. Go doc
 2. More tests
+3. Unit test actions
 
 ## Why
 
