@@ -13,7 +13,7 @@ func init() {
 	DefaultZap(false, "", zap.DebugLevel)
 }
 
-func CustomZap(logger *zap.Logger) {
+func UseZap(logger *zap.Logger) {
 	globalLogger = logger
 	globalSugar = globalLogger.Sugar()
 }
@@ -48,13 +48,12 @@ func DefaultZap(isProduction bool, logFile string, level zapcore.Level) {
 	config.Level.SetLevel(level)
 
 	// skip one level from the helper function
-	globalLogger, err = config.Build(zap.AddCallerSkip(1))
+	logger, err := config.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		panic(err)
 	}
 
-	// set sugar
-	globalSugar = globalLogger.Sugar()
+	UseZap(logger)
 }
 
 func Debug(message string, fields ...zap.Field) {
@@ -95,16 +94,4 @@ func Errorf(message string, fields ...interface{}) {
 
 func ErrorErr(message string, err error) {
 	globalLogger.Error(message, zap.Error(err))
-}
-
-func Fatal(message string, fields ...zap.Field) {
-	globalLogger.Fatal(message, fields...)
-}
-
-func Fatalf(message string, fields ...interface{}) {
-	globalSugar.Fatalf(message, fields...)
-}
-
-func FatalErr(message string, err error) {
-	globalLogger.Fatal(message, zap.Error(err))
 }
