@@ -14,7 +14,11 @@ func GetString(input any) string {
 	}
 	// Get string from pointer
 	if reflect.TypeOf(input).Kind() == reflect.Pointer {
-		return GetString(reflect.Indirect(reflect.ValueOf(input)).Interface())
+		reflectedValue := reflect.Indirect(reflect.ValueOf(input))
+		if reflectedValue.IsZero() {
+			return ""
+		}
+		return GetString(reflectedValue.Interface())
 	}
 	var stringValue string
 	switch input := input.(type) {
