@@ -15,7 +15,7 @@ func GetString(input any) string {
 	// Get string from pointer
 	if reflect.TypeOf(input).Kind() == reflect.Pointer {
 		reflectedValue := reflect.Indirect(reflect.ValueOf(input))
-		if reflectedValue.IsZero() {
+		if reflect.Zero(reflect.TypeOf(reflectedValue)) == reflectedValue {
 			return ""
 		}
 		return GetString(reflectedValue.Interface())
