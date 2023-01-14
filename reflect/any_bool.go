@@ -3,6 +3,7 @@ package reflect
 import (
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/hjwalt/runway/logger"
 	"go.uber.org/zap"
@@ -22,7 +23,7 @@ func GetBool(input any) bool {
 		boolValue = input
 	case string:
 		var err error
-		boolValue, err = strconv.ParseBool(input)
+		boolValue, err = strconv.ParseBool(strings.ToUpper(input))
 		if err != nil {
 			logger.WarnErr("string parse bool failed", err)
 		}
