@@ -19,7 +19,15 @@ val, err := inverse.GetAll[string](context.Background(), "test-1-qualifier")
 val := reflect.GetBool("false")
 ```
 
-For more functions do read the codebase.
+## Developing
+
+Makefile is heavily used.
+
+```
+make test
+make update
+make tidy
+```
 
 ## To Do
 
@@ -63,13 +71,14 @@ The principles of SOLID (refer to Clean Architecture by Robert C. Martin for pro
 4. Interface segregation: avoid depending on things not used
 5. Dependency inversion: depend on policies (interfaces) rather than details (implementation)
 
-These principles are NOT object oriented construct, its just easier to achieve with object oriented language in comparison to languages prior.
-In this case I am talking about ancient versions of C / C++. 
-Modern C and C++ can achieve SOLID.
-
-Meaning, these can be achieved with idiomatic golang, without ugly complex implementations.
+These principles are not object oriented construct, its just easier to achieve with object oriented language in comparison to some other languages.
+The principles can be achieved with idiomatic golang.
 
 ## Reasoning
+
+### Environment
+
+Environment utility function facades `os.Getenv` with additional logic to perform simple type conversion.
 
 ### Logger
 
