@@ -18,3 +18,15 @@ func TestIsPointer(t *testing.T) {
 	var testNil *string
 	assert.True(reflect.IsPointer(testNil))
 }
+
+func TestIsNil(t *testing.T) {
+	assert := assert.New(t)
+
+	assert.False(reflect.IsNil("test"))
+
+	pointerVal := "test"
+	assert.False(reflect.IsNil(&pointerVal))
+
+	var testNil *string
+	assert.True(reflect.IsNil(testNil))
+}

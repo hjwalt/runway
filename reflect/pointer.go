@@ -11,3 +11,10 @@ func IsPointer(input any) bool {
 	}
 	return false
 }
+
+func IsNil(input any) bool {
+	if !IsPointer(input) {
+		return false
+	}
+	return reflect.ValueOf(input).IsNil()
+}
