@@ -13,7 +13,7 @@ func GetIntBase(input any, bitSize int) int64 {
 		return 0
 	}
 	// Get int from pointer
-	if reflect.TypeOf(input).Kind() == reflect.Pointer {
+	if IsPointer(input) {
 		return GetIntBase(reflect.Indirect(reflect.ValueOf(input)).Interface(), bitSize)
 	}
 	var intValue int64

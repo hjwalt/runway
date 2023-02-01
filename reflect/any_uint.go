@@ -13,7 +13,7 @@ func GetUintBase(input any, bitSize int) uint64 {
 		return 0
 	}
 	// Get uint from pointer
-	if reflect.TypeOf(input).Kind() == reflect.Pointer {
+	if IsPointer(input) {
 		return GetUintBase(reflect.Indirect(reflect.ValueOf(input)).Interface(), bitSize)
 	}
 	var uintValue uint64

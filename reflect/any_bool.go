@@ -14,7 +14,7 @@ func GetBool(input any) bool {
 		return false
 	}
 	// Get bool from pointer
-	if reflect.TypeOf(input).Kind() == reflect.Pointer {
+	if IsPointer(input) {
 		return GetBool(reflect.Indirect(reflect.ValueOf(input)).Interface())
 	}
 	var boolValue = false

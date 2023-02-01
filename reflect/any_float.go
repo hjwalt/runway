@@ -13,7 +13,7 @@ func GetFloatBase(input any, bitSize int) float64 {
 		return 0
 	}
 	// Get float from pointer
-	if reflect.TypeOf(input).Kind() == reflect.Pointer {
+	if IsPointer(input) {
 		return GetFloatBase(reflect.Indirect(reflect.ValueOf(input)).Interface(), bitSize)
 	}
 	var floatValue float64

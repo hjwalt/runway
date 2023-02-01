@@ -13,7 +13,7 @@ func GetString(input any) string {
 		return ""
 	}
 	// Get string from pointer
-	if reflect.TypeOf(input).Kind() == reflect.Pointer {
+	if IsPointer(input) {
 		reflectedValue := reflect.Indirect(reflect.ValueOf(input))
 		if !reflectedValue.IsValid() {
 			return ""
