@@ -1,6 +1,7 @@
 package reflect
 
 import (
+	"math"
 	"reflect"
 	"strconv"
 
@@ -28,6 +29,8 @@ func GetIntBase(input any, bitSize int) int64 {
 		intValue = int64(input)
 	case int64:
 		intValue = input
+	case float32, float64:
+		intValue = int64(math.Round(GetFloatBase(input, 64)))
 	case bool:
 		if input {
 			intValue = 1
