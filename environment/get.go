@@ -15,7 +15,7 @@ func GetString(key, fallback string) string {
 }
 
 func GetInt64(key string, fallback int64) int64 {
-	value := os.Getenv(key)
+	value := GetString(key, "")
 	if len(value) == 0 {
 		return fallback
 	}
@@ -28,7 +28,7 @@ func GetInt64(key string, fallback int64) int64 {
 }
 
 func GetBool(key string, fallback bool) bool {
-	value := os.Getenv(key)
+	value := GetString(key, "")
 	if len(value) == 0 {
 		return fallback
 	}
