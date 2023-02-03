@@ -222,3 +222,27 @@ func TestMapperNilTarget(t *testing.T) {
 	res2 := mapper.Set(target, source)
 	assert.Nil(res2)
 }
+
+func TestMapperMappingCustomFieldSearch(t *testing.T) {
+	assert := assert.New(t)
+
+	mapper := reflect.NewMapper(
+		reflect.WithMapperFieldSearch(func(fieldName string) []string {
+			defaults := reflect.DefaultStringSearch(fieldName)
+			if fieldName == "Str" {
+				defaults = append(defaults, "str_test")
+			}
+			return defaults
+		}),
+	)
+
+	source := map[string]interface{}{
+		"str_test": "str",
+	}
+
+	target := TargetTest{}
+
+	target = mapper.Set(target, source).(TargetTest)
+
+	assert.Equal("str", target.Str)
+}

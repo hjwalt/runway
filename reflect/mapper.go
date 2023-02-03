@@ -10,8 +10,8 @@ import (
 )
 
 // constructor
-func NewMapper() *Mapper {
-	defaultHandler := Mapper{
+func NewMapper(configurations ...func(*Mapper) *Mapper) *Mapper {
+	defaultHandler := &Mapper{
 		FieldSearch: DefaultStringSearch,
 		Handler: map[reflect.Kind]func(interface{}, reflect.Type) reflect.Value{
 			reflect.Int: func(input interface{}, sliceType reflect.Type) reflect.Value {
@@ -63,7 +63,18 @@ func NewMapper() *Mapper {
 	defaultHandler.Handler[reflect.Pointer] = defaultHandler.PointerHandler
 	defaultHandler.Handler[reflect.Struct] = defaultHandler.StructHandler
 
-	return &defaultHandler
+	for _, configuration := range configurations {
+		defaultHandler = configuration(defaultHandler)
+	}
+
+	return defaultHandler
+}
+
+func WithMapperFieldSearch(fieldSearch func(string) []string) func(*Mapper) *Mapper {
+	return func(m *Mapper) *Mapper {
+		m.FieldSearch = fieldSearch
+		return m
+	}
 }
 
 // implementation
