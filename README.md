@@ -43,6 +43,8 @@ make tidy
 make htmlcov
 ```
 
+Last coverage: 97.9%
+
 ## To Do
 
 1. Go doc
