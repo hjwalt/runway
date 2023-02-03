@@ -10,7 +10,6 @@ import (
 )
 
 // constructor
-
 func NewMapper() *Mapper {
 	defaultHandler := Mapper{
 		FieldSearch: DefaultStringSearch,
