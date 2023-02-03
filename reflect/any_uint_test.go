@@ -84,4 +84,5 @@ func TestByteToUInt(t *testing.T) {
 	reflect.Endian().PutUint64(valueBytes, 8)
 
 	assert.Equal(uint64(8), reflect.GetUint64(valueBytes))
+	assert.Equal(uint64(0), reflect.GetUint64([]byte{}))
 }
