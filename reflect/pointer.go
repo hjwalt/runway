@@ -13,6 +13,9 @@ func IsPointer(input any) bool {
 }
 
 func IsNil(input any) bool {
+	if input == nil {
+		return true
+	}
 	if !IsPointer(input) {
 		return false
 	}

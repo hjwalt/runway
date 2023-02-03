@@ -17,6 +17,7 @@ func TestIsPointer(t *testing.T) {
 
 	var testNil *string
 	assert.True(reflect.IsPointer(testNil))
+	assert.True(reflect.IsPointer(nil))
 }
 
 func TestIsNil(t *testing.T) {
@@ -29,4 +30,5 @@ func TestIsNil(t *testing.T) {
 
 	var testNil *string
 	assert.True(reflect.IsNil(testNil))
+	assert.True(reflect.IsNil(nil))
 }

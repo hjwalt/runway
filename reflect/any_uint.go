@@ -1,6 +1,7 @@
 package reflect
 
 import (
+	"math"
 	"reflect"
 	"strconv"
 
@@ -8,13 +9,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetUintBase(input any, bitSize int) uint64 {
-	if input == nil {
-		return 0
-	}
-	// Get uint from pointer
-	if IsPointer(input) {
-		return GetUintBase(reflect.Indirect(reflect.ValueOf(input)).Interface(), bitSize)
+func GetUintBase(raw any, bitSize int) uint64 {
+	input, isValid := GetValue(raw)
+	if !isValid {
+		return uint64(0)
 	}
 	var uintValue uint64
 	switch input := input.(type) {
@@ -28,6 +26,11 @@ func GetUintBase(input any, bitSize int) uint64 {
 		uintValue = uint64(input)
 	case uint64:
 		uintValue = input
+	case int, int8, int16, int32, int64:
+		inputValue := GetIntBase(input, 64)
+		uintValue = uint64(inputValue)
+	case float32, float64:
+		uintValue = uint64(math.Round(GetFloatBase(input, 64)))
 	case bool:
 		if input {
 			uintValue = 1
