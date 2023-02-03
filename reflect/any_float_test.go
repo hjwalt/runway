@@ -27,9 +27,11 @@ func TestPtrToFloat(t *testing.T) {
 	assert := assert.New(t)
 
 	input := float32(100)
+	var inputNil *float32
 
 	assert.Equal(float32(100), reflect.GetFloat32(&input))
 	assert.Equal(float64(100), reflect.GetFloat64(&input))
+	assert.Equal(float64(0), reflect.GetFloat64(inputNil))
 }
 
 func TestIntToFloat(t *testing.T) {

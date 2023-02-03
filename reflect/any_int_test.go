@@ -23,6 +23,16 @@ func TestIntToInt(t *testing.T) {
 	assert.Equal(int64(64), reflect.GetInt64(int64(64)))
 }
 
+func TestUintToInt(t *testing.T) {
+	assert := assert.New(t)
+
+	assert.Equal(int64(0), reflect.GetInt64(uint(0)))
+	assert.Equal(int64(8), reflect.GetInt64(uint8(8)))
+	assert.Equal(int64(16), reflect.GetInt64(uint16(16)))
+	assert.Equal(int64(32), reflect.GetInt64(uint32(32)))
+	assert.Equal(int64(64), reflect.GetInt64(uint64(64)))
+}
+
 func TestNilToInt(t *testing.T) {
 	assert := assert.New(t)
 
@@ -33,8 +43,10 @@ func TestPtrToInt(t *testing.T) {
 	assert := assert.New(t)
 
 	input := int(1)
+	var inputNil *int
 
 	assert.Equal(int64(1), reflect.GetInt64(&input))
+	assert.Equal(int64(0), reflect.GetInt64(inputNil))
 }
 
 func TestFloatToInt(t *testing.T) {

@@ -8,18 +8,12 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetString(input any) string {
-	if input == nil {
+func GetString(raw any) string {
+	input, isValid := GetValue(raw)
+	if !isValid {
 		return ""
 	}
-	// Get string from pointer
-	if IsPointer(input) {
-		reflectedValue := reflect.Indirect(reflect.ValueOf(input))
-		if !reflectedValue.IsValid() {
-			return ""
-		}
-		return GetString(reflectedValue.Interface())
-	}
+
 	var stringValue string
 	switch input := input.(type) {
 	case string:

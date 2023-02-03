@@ -8,13 +8,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetFloatBase(input any, bitSize int) float64 {
-	if input == nil {
-		return 0
-	}
-	// Get float from pointer
-	if IsPointer(input) {
-		return GetFloatBase(reflect.Indirect(reflect.ValueOf(input)).Interface(), bitSize)
+func GetFloatBase(raw any, bitSize int) float64 {
+	input, isValid := GetValue(raw)
+	if !isValid {
+		return float64(0)
 	}
 	var floatValue float64
 	switch input := input.(type) {

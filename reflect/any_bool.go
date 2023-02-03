@@ -9,13 +9,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetBool(input any) bool {
-	if input == nil {
+func GetBool(raw any) bool {
+	input, isValid := GetValue(raw)
+	if !isValid {
 		return false
-	}
-	// Get bool from pointer
-	if IsPointer(input) {
-		return GetBool(reflect.Indirect(reflect.ValueOf(input)).Interface())
 	}
 	var boolValue = false
 	switch input := input.(type) {

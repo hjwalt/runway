@@ -9,13 +9,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetIntBase(input any, bitSize int) int64 {
-	if input == nil {
-		return 0
-	}
-	// Get int from pointer
-	if IsPointer(input) {
-		return GetIntBase(reflect.Indirect(reflect.ValueOf(input)).Interface(), bitSize)
+func GetIntBase(raw any, bitSize int) int64 {
+	input, isValid := GetValue(raw)
+	if !isValid {
+		return int64(0)
 	}
 	var intValue int64
 	switch input := input.(type) {
@@ -29,6 +26,9 @@ func GetIntBase(input any, bitSize int) int64 {
 		intValue = int64(input)
 	case int64:
 		intValue = input
+	case uint, uint8, uint16, uint32, uint64:
+		uintValue := GetUintBase(input, 64)
+		intValue = int64(uintValue)
 	case float32, float64:
 		intValue = int64(math.Round(GetFloatBase(input, 64)))
 	case bool:

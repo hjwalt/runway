@@ -28,7 +28,10 @@ func TestPtrToBool(t *testing.T) {
 	assert := assert.New(t)
 
 	input := true
+	var inputNil *bool
+
 	assert.Equal(true, reflect.GetBool(&input))
+	assert.Equal(false, reflect.GetBool(inputNil))
 }
 
 func TestIntToBool(t *testing.T) {
