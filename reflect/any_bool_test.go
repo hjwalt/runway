@@ -7,10 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type StructForTest struct {
-	Message string
-}
-
 func TestBoolToBool(t *testing.T) {
 	assert := assert.New(t)
 
