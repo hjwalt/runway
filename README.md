@@ -9,13 +9,26 @@ go get github.com/hjwalt/runway
 ```
 
 ```
+// environment get
+environment.GetString("ENV_NAME_TO_SOME_URL_TO_STORE", "default url")
+
+// logging
 logger.Debug("debug")
 logger.Info("info", zap.String("some key", "some value"))
 
-inverse.Register("test-1-qualifier", func(ctx context.Context) (any, error) { return "test-1-value", nil })
+// inverse registration
+inverse.Register(
+	"test-1-qualifier", 
+	func(ctx context.Context) (any, error) { 
+		return "test-1-value", nil 
+	},
+)
+
+// inverse resolution
 val, err := inverse.GetLast[string](context.Background(), "test-1-qualifier")
 val, err := inverse.GetAll[string](context.Background(), "test-1-qualifier")
 
+// reflection utility functions
 val := reflect.GetBool("false")
 ```
 
@@ -27,13 +40,13 @@ Makefile is heavily used.
 make test
 make update
 make tidy
+make htmlcov
 ```
 
 ## To Do
 
 1. Go doc
-2. More tests
-3. Unit test actions
+2. Unit test actions
 
 ## Why
 
@@ -45,6 +58,7 @@ Some of it includes:
 1. Dependency inversion and configuration list parameter management
 2. Reflection utility functions
 3. Logging utility functions
+4. Environment variable retrieval with sane defaults
 
 This project is a combination of those.
 
