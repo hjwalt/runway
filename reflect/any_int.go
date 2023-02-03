@@ -47,6 +47,11 @@ func GetIntBase(raw any, bitSize int) int64 {
 			logger.WarnErr("string parse int failed", err)
 			return 0
 		}
+	case []byte:
+		if len(input) == 0 {
+			return 0
+		}
+		return int64(Endian().Uint64(input))
 	default:
 		logger.Warn("conversion for int type failed", zap.Any("type", reflect.TypeOf(input)), zap.Any("value", input))
 		return 0

@@ -77,3 +77,12 @@ func TestStructToInt(t *testing.T) {
 
 	assert.Equal(int64(0), reflect.GetInt64(StructForTest{Message: "123"}))
 }
+
+func TestByteToInt(t *testing.T) {
+	assert := assert.New(t)
+
+	valueBytes := make([]byte, 8)
+	reflect.Endian().PutUint64(valueBytes, 8)
+
+	assert.Equal(int64(8), reflect.GetInt64(valueBytes))
+}
