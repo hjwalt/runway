@@ -1,6 +1,8 @@
 ---
 layout: post
 title: Inverse
+date: 2023-03-01 00:00:00 +0000
+categories: page
 ---
 
 # Inverse
