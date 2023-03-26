@@ -1,1 +1,23 @@
-theme: minima
+# Dependencies
+# markdown: redcarpet
+highlighter: pygments
+
+# Permalinks
+permalink: pretty
+# relative_permalinks: true
+
+# Setup
+title: Runway
+tagline: "A Jekyll theme"
+description: "Runway to make a solid and simple golang software"
+baseurl: /runway/
+
+paginate: 5
+
+# Custom vars
+
+github:
+  repo: https://github.com/hjwalt/runway
+
+plugins:
+  - jekyll-paginate
