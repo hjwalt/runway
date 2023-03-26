@@ -1,3 +1,7 @@
+---
+title: Inverse
+---
+
 # Inverse
 
 I have looked into dig, fx, and wire, if there are any more I should look at please add in the issues or discussions.
