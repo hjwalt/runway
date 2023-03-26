@@ -16,6 +16,8 @@ paginate: 5
 
 # Custom vars
 
+pagebaseurl: /runway
+
 github:
   repo: https://github.com/hjwalt/runway
 
