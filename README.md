@@ -1,3 +1,5 @@
+theme: cayman
+
 Runway to make a solid and simple golang software.
 
 ## Using
