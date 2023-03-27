@@ -8,7 +8,6 @@ permalink: pretty
 
 # Setup
 title: Runway
-tagline: "A Jekyll theme"
 description: "Runway to make a solid and simple golang software"
 baseurl: /runway/
 
