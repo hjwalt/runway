@@ -41,7 +41,7 @@ make tidy
 make htmlcov
 ```
 
-Last coverage: 98.2%
+Last coverage: 98.4%
 
 ## To Do
 

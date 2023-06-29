@@ -22,3 +22,12 @@ func TestRead(t *testing.T) {
 	assert.Equal("pikachu", c.Name)
 	assert.Equal(int64(1234), c.Number)
 }
+
+func TestReadFail(t *testing.T) {
+	assert := assert.New(t)
+
+	c, err := configuration.Read("fixture/nothere.yaml", format.Yaml[Config]())
+
+	assert.ErrorIs(err, configuration.ErrReadFail)
+	assert.Equal(Config{}, c)
+}
