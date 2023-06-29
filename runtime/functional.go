@@ -10,21 +10,26 @@ import (
 
 // constructor
 func NewFunctional[C any](configurations ...Configuration[*Functional[C]]) Runtime {
-	consumer := &Functional[C]{}
+	c := &Functional[C]{}
+	c = FunctionalDefault[C](c)
 	for _, configuration := range configurations {
-		consumer = configuration(consumer)
+		c = configuration(c)
 	}
-	return consumer
+	return c
+}
+
+// default
+func FunctionalDefault[C any](c *Functional[C]) *Functional[C] {
+	c.data = reflect.Construct[C]()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c.context = ctx
+	c.cancel = cancel
+
+	return c
 }
 
 // configuration
-func FunctionalWithController[C any](controller Controller) Configuration[*Functional[C]] {
-	return func(c *Functional[C]) *Functional[C] {
-		c.controller = controller
-		return c
-	}
-}
-
 func FunctionalWithInitialise[C any](initialise func() (C, error)) Configuration[*Functional[C]] {
 	return func(c *Functional[C]) *Functional[C] {
 		c.initialise = initialise
@@ -71,9 +76,7 @@ func (r *Functional[C]) Start() error {
 		return ErrFunctionalRuntimeNoLoop
 	}
 
-	if r.initialise == nil {
-		r.data = reflect.Construct[C]()
-	} else {
+	if r.initialise != nil {
 		data, initerr := r.initialise()
 		if initerr != nil {
 			return errors.Join(ErrFunctionalRuntimeInitialise, initerr)
@@ -81,14 +84,7 @@ func (r *Functional[C]) Start() error {
 		r.data = data
 	}
 
-	if r.context == nil {
-		ctx, cancel := context.WithCancel(context.Background())
-		r.context = ctx
-		r.cancel = cancel
-	}
-
 	go r.Run()
-
 	r.controller.Started()
 	return nil
 }
@@ -97,17 +93,22 @@ func (r *Functional[C]) Stop() {
 	r.cancel()
 }
 
+func (r *Functional[C]) SetController(controller Controller) {
+	r.controller = controller
+}
+
 func (r *Functional[C]) Run() {
 	defer r.controller.Stopped()
 
 	for {
 		err := r.loop(r.data, r.context, r.cancel)
 		if err != nil {
-			logger.ErrorErr("functional runtime loop", err)
+			logger.ErrorErr("functional runtime loop error", err)
+			r.controller.Error(err)
 			break
 		}
 		if r.context.Err() != nil {
-			logger.ErrorErr("functional runtime context", err)
+			logger.WarnErr("functional runtime exitting via context", err)
 			break
 		}
 	}

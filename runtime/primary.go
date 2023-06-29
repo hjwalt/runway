@@ -5,30 +5,35 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/hjwalt/runway/logger"
 )
 
 // constructor
 func NewPrimary(configurations ...Configuration[*Primary]) Runtime {
-	consumer := &Primary{}
+	c := &Primary{}
+	c = PrimaryDefault(c)
 	for _, configuration := range configurations {
-		consumer = configuration(consumer)
+		c = configuration(c)
 	}
-	return consumer
+	return c
+}
+
+// default
+func PrimaryDefault(c *Primary) *Primary {
+	controller, err := NewPrimaryController()
+	c.SetController(controller)
+	c.err = err
+	return c
 }
 
 // configuration
-func PrimaryWithController(controller Controller) Configuration[*Primary] {
-	return func(c *Primary) *Primary {
-		c.controller = controller
-		return c
-	}
-}
-
 func PrimaryWithRuntime(runtime Runtime) Configuration[*Primary] {
 	return func(c *Primary) *Primary {
 		if c.runtimes == nil {
 			c.runtimes = make([]Runtime, 0)
 		}
+		runtime.SetController(c.controller)
 		c.runtimes = append(c.runtimes, runtime)
 		return c
 	}
@@ -37,6 +42,7 @@ func PrimaryWithRuntime(runtime Runtime) Configuration[*Primary] {
 // implementation
 type Primary struct {
 	controller Controller
+	err        chan error
 	runtimes   []Runtime
 }
 
@@ -57,11 +63,19 @@ func (r *Primary) Start() error {
 	}
 
 	go r.Interrupt()
-	// defer r.Panic()
+	go r.Error()
 
 	r.controller.Wait()
 
 	return nil
+}
+
+func (r *Primary) Stop() {
+	r.StopFrom(len(r.runtimes) - 1)
+}
+
+func (r *Primary) SetController(controller Controller) {
+	r.controller = controller
 }
 
 func (r *Primary) StopFrom(from int) {
@@ -70,29 +84,24 @@ func (r *Primary) StopFrom(from int) {
 	}
 }
 
-func (r *Primary) Stop() {
-	r.StopFrom(len(r.runtimes) - 1)
-}
-
-func (runtime *Primary) Interrupt() {
+func (r *Primary) Interrupt() {
 	interruptSignal := make(chan os.Signal, 10)
 	signal.Notify(interruptSignal, os.Interrupt, syscall.SIGTERM)
 	<-interruptSignal
-	runtime.Stop()
-	// os.Exit(0) -- don't need os.Exit if everything is cleaned up properly
+	r.Stop()
 }
 
-// Deal with panic some other time
-// func (runtime *Primary) Panic() {
-// 	logger.Infof("panicking")
-// 	if x := recover(); x != nil {
-// 		logger.Error("runtime panic", zap.Error(x.(error)))
-// 		runtime.Stop()
-// 		os.Exit(1)
-// 	}
-// }
+func (r *Primary) Error() {
+	err := <-r.err
+	logger.ErrorErr("runtime error received, exitting", err)
+	r.Stop()
+	if !errors.Is(err, ErrPrimaryTesting) {
+		os.Exit(1) // will fail the unit test, so have to flag out
+	}
+}
 
 // Errors
 var (
 	ErrPrimaryInitialiseError = errors.New("primary runtime initialise function failed")
+	ErrPrimaryTesting         = errors.New("primary runtime testing error")
 )

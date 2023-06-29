@@ -41,7 +41,7 @@ make tidy
 make htmlcov
 ```
 
-Last coverage: 98.4%
+Last coverage: 98.0%
 
 ## To Do
 
@@ -150,3 +150,20 @@ func MultiLevelInjector(ctx context.Context) (any, error) {
 	}, nil
 }
 ```
+
+### Runtime
+
+Runtimes are independent context that needs to be maintained from the start until the end of the program execution.
+Runtimes usually also needs to be instantiated and cleaned up.
+
+Examples of runtimes:
+
+1. HTTP server
+2. Kafka consumer
+3. Kafka producer
+4. Database connection
+
+Why is it important to standardise?
+
+1. Golang is too barebone. This kind of runtime management needs to keep getting rewritten.
+2. Resource management is not a difficult problem but the cost of mistakes is high. Your program can hang, you can have connections interrupted without clean disconnect, and many more. Reducing the potential scope of failure is in general a good idea.

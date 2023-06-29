@@ -13,13 +13,11 @@ import (
 func TestPrimaryWillStopNormally(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -39,7 +37,6 @@ func TestPrimaryWillStopNormally(t *testing.T) {
 	)
 
 	fnPrimary := runtime.NewPrimary(
-		runtime.PrimaryWithController(controller),
 		runtime.PrimaryWithRuntime(fnRuntime),
 	)
 
@@ -54,13 +51,11 @@ func TestPrimaryWillStopNormally(t *testing.T) {
 func TestPrimaryWillNotStartOnOneInitError(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime1 := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -80,7 +75,6 @@ func TestPrimaryWillNotStartOnOneInitError(t *testing.T) {
 	)
 
 	fnRuntime2 := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, errors.New("test error")
@@ -96,7 +90,6 @@ func TestPrimaryWillNotStartOnOneInitError(t *testing.T) {
 	)
 
 	fnPrimary := runtime.NewPrimary(
-		runtime.PrimaryWithController(controller),
 		runtime.PrimaryWithRuntime(fnRuntime1),
 		runtime.PrimaryWithRuntime(fnRuntime2),
 	)
@@ -112,13 +105,11 @@ func TestPrimaryWillNotStartOnOneInitError(t *testing.T) {
 func TestPrimaryWillStopWhenStopped(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -134,7 +125,6 @@ func TestPrimaryWillStopWhenStopped(t *testing.T) {
 	)
 
 	fnPrimary := runtime.NewPrimary(
-		runtime.PrimaryWithController(controller),
 		runtime.PrimaryWithRuntime(fnRuntime),
 	)
 
@@ -142,6 +132,40 @@ func TestPrimaryWillStopWhenStopped(t *testing.T) {
 		time.Sleep(time.Millisecond)
 		fnPrimary.Stop()
 	}()
+	startErr := fnPrimary.Start()
+
+	assert.NoError(startErr)
+	assert.Greater(value, 0)
+	assert.Equal(1, initCalled)
+	assert.Equal(1, exitCalled)
+}
+
+func TestPrimaryWillStopWhenError(t *testing.T) {
+	assert := assert.New(t)
+
+	value := 0
+	initCalled := 0
+	exitCalled := 0
+
+	fnRuntime := runtime.NewFunctional[*TestData](
+		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
+			initCalled += 1
+			return &TestData{}, nil
+		}),
+		runtime.FunctionalWithCleanup[*TestData](func(data *TestData) {
+			exitCalled += 1
+		}),
+		runtime.FunctionalWithLoop[*TestData](func(data *TestData, ctx context.Context, cancel context.CancelFunc) error {
+			data.value += 1
+			value += 1
+			return runtime.ErrPrimaryTesting
+		}),
+	)
+
+	fnPrimary := runtime.NewPrimary(
+		runtime.PrimaryWithRuntime(fnRuntime),
+	)
+
 	startErr := fnPrimary.Start()
 
 	assert.NoError(startErr)

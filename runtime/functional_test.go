@@ -23,16 +23,20 @@ type TestData struct {
 	value int64
 }
 
+func NewController() runtime.Controller {
+	controller, _ := runtime.NewPrimaryController()
+	return controller
+}
+
 func TestFunctionalWillStopNormally(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -50,6 +54,7 @@ func TestFunctionalWillStopNormally(t *testing.T) {
 			return nil
 		}),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	controller.Wait()
@@ -63,13 +68,12 @@ func TestFunctionalWillStopNormally(t *testing.T) {
 func TestFunctionalWithContext(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	value := int64(0)
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -86,6 +90,7 @@ func TestFunctionalWithContext(t *testing.T) {
 		}),
 		runtime.FunctionalWithContext[*TestData](context.WithValue(context.Background(), ContextKey("test"), int64(5))),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	controller.Wait()
@@ -99,12 +104,11 @@ func TestFunctionalWithContext(t *testing.T) {
 func TestFunctionalMissingInitialiseWillConstruct(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	value := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithCleanup[*TestData](func(data *TestData) {
 			exitCalled += 1
 		}),
@@ -118,6 +122,7 @@ func TestFunctionalMissingInitialiseWillConstruct(t *testing.T) {
 			return nil
 		}),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	controller.Wait()
@@ -130,13 +135,12 @@ func TestFunctionalMissingInitialiseWillConstruct(t *testing.T) {
 func TestFunctionalWillStopOnError(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -154,6 +158,7 @@ func TestFunctionalWillStopOnError(t *testing.T) {
 			return nil
 		}),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	controller.Wait()
@@ -167,13 +172,12 @@ func TestFunctionalWillStopOnError(t *testing.T) {
 func TestFunctionalWillStopOnStop(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -187,6 +191,7 @@ func TestFunctionalWillStopOnStop(t *testing.T) {
 			return nil
 		}),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	time.Sleep(time.Millisecond)
@@ -202,12 +207,11 @@ func TestFunctionalWillStopOnStop(t *testing.T) {
 func TestFunctionalMissingLoop(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, nil
@@ -216,6 +220,7 @@ func TestFunctionalMissingLoop(t *testing.T) {
 			exitCalled += 1
 		}),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	assert.ErrorIs(startErr, runtime.ErrFunctionalRuntimeNoLoop)
@@ -224,13 +229,12 @@ func TestFunctionalMissingLoop(t *testing.T) {
 func TestFunctionalInitialiseError(t *testing.T) {
 	assert := assert.New(t)
 
-	controller := runtime.NewController()
+	controller := NewController()
 	value := 0
 	initCalled := 0
 	exitCalled := 0
 
 	fnRuntime := runtime.NewFunctional[*TestData](
-		runtime.FunctionalWithController[*TestData](controller),
 		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
 			initCalled += 1
 			return &TestData{}, errors.New("error init")
@@ -248,6 +252,7 @@ func TestFunctionalInitialiseError(t *testing.T) {
 			return nil
 		}),
 	)
+	fnRuntime.SetController(controller)
 
 	startErr := fnRuntime.Start()
 	assert.ErrorIs(startErr, runtime.ErrFunctionalRuntimeInitialise)
