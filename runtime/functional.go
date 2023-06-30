@@ -113,7 +113,9 @@ func (r *Functional[C]) Run() {
 		}
 	}
 
-	r.cleanup(r.data)
+	if r.cleanup != nil {
+		r.cleanup(r.data)
+	}
 }
 
 // Errors

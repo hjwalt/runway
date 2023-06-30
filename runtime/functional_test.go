@@ -132,6 +132,38 @@ func TestFunctionalMissingInitialiseWillConstruct(t *testing.T) {
 	assert.Equal(1, exitCalled)
 }
 
+func TestFunctionalMissingCleanup(t *testing.T) {
+	assert := assert.New(t)
+
+	controller := NewController()
+	value := 0
+	initCalled := 0
+
+	fnRuntime := runtime.NewFunctional[*TestData](
+		runtime.FunctionalWithInitialise[*TestData](func() (*TestData, error) {
+			initCalled += 1
+			return &TestData{}, nil
+		}),
+		runtime.FunctionalWithLoop[*TestData](func(data *TestData, ctx context.Context, cancel context.CancelFunc) error {
+			if data.value == 10 {
+				cancel()
+			} else {
+				data.value += 1
+				value += 1
+			}
+			return nil
+		}),
+	)
+	fnRuntime.SetController(controller)
+
+	startErr := fnRuntime.Start()
+	controller.Wait()
+
+	assert.NoError(startErr)
+	assert.Equal(10, value)
+	assert.Equal(1, initCalled)
+}
+
 func TestFunctionalWillStopOnError(t *testing.T) {
 	assert := assert.New(t)
 
