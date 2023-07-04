@@ -25,4 +25,6 @@ jobs:
           ls
 
       - name: Test
-        run: go test ./... -cover -coverprofile cover.out
+        run: |
+          go get .
+          go test ./... -cover -coverprofile cover.out
