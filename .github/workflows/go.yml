@@ -22,11 +22,7 @@ jobs:
 
       - name: Debug
         run: |
-          echo $GOBIN
-          echo $GOPATH
-          echo $(pwd)
+          ls
 
       - name: Test
         run: go test ./... -cover -coverprofile cover.out
-        env:
-          GOPATH: /home/runner/work/runway/runway
