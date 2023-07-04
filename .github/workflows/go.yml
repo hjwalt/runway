@@ -24,5 +24,3 @@ jobs:
         run: |
           go mod download
           go test ./... -cover -coverprofile cover.out
-        env:
-          GOPATH: /home/runner/work/runway/.go
