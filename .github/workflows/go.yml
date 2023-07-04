@@ -28,3 +28,5 @@ jobs:
 
       - name: Test
         run: go test ./... -cover -coverprofile cover.out
+        env:
+          GOPATH: /home/runner/work/runway/runway
