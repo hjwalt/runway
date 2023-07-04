@@ -20,7 +20,11 @@ jobs:
         with:
           go-version: "1.20"
 
+      - name: Install dependencies
+        run: go get ./...
+
       - name: Test
-        run: |
-          go mod download
-          go test ./... -cover -coverprofile cover.out
+        run: go test ./... -cover -coverprofile cover.out
+
+      - name: Coverage
+        run: go tool cover -func cover.out
