@@ -4,46 +4,57 @@ import (
 	"errors"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
+	"time"
 
 	"github.com/hjwalt/runway/logger"
 )
 
-// constructor
-func NewPrimary(configurations ...Configuration[*Primary]) Runtime {
-	c := &Primary{}
-	c = PrimaryDefault(c)
-	for _, configuration := range configurations {
-		c = configuration(c)
+var primary atomic.Pointer[Primary]
+
+type Runtime interface {
+	Start() error
+	Stop()
+}
+
+func Start(runtimes []Runtime, sleepTime time.Duration) error {
+	c := &Primary{
+		runtimes:         runtimes,
+		interruptChannel: make(chan os.Signal, 10),
+		errorChannel:     make(chan error, 10),
+		sleepTime:        sleepTime,
 	}
-	return c
+	primary.Store(c)
+	return primary.Load().Start()
 }
 
-// default
-func PrimaryDefault(c *Primary) *Primary {
-	controller, err := NewPrimaryController()
-	c.SetController(controller)
-	c.err = err
-	return c
+func Stop() {
+	if primary.Load() != nil {
+		primary.Load().Stop()
+	}
 }
 
-// configuration
-func PrimaryWithRuntime(runtime Runtime) Configuration[*Primary] {
-	return func(c *Primary) *Primary {
-		if c.runtimes == nil {
-			c.runtimes = make([]Runtime, 0)
-		}
-		runtime.SetController(c.controller)
-		c.runtimes = append(c.runtimes, runtime)
-		return c
+func Wait() {
+	if primary.Load() != nil {
+		primary.Load().Wait()
+	}
+}
+
+func Error(err error) {
+	if primary.Load() != nil {
+		primary.Load().errorChannel <- err
 	}
 }
 
 // implementation
 type Primary struct {
-	controller Controller
-	err        chan error
-	runtimes   []Runtime
+	// wait             sync.WaitGroup
+	started          atomic.Bool
+	runtimes         []Runtime
+	interruptChannel chan os.Signal
+	errorChannel     chan error
+	sleepTime        time.Duration
 }
 
 func (r *Primary) Start() error {
@@ -58,24 +69,25 @@ func (r *Primary) Start() error {
 	}
 
 	if startError != nil {
-		r.controller.Wait()
 		return errors.Join(ErrPrimaryInitialiseError, startError)
 	}
 
 	go r.Interrupt()
 	go r.Error()
 
-	r.controller.Wait()
-
+	r.started.Store(true)
 	return nil
 }
 
 func (r *Primary) Stop() {
+	defer r.started.Store(false)
 	r.StopFrom(len(r.runtimes) - 1)
 }
 
-func (r *Primary) SetController(controller Controller) {
-	r.controller = controller
+func (r *Primary) Wait() {
+	for r.started.Load() {
+		time.Sleep(r.sleepTime)
+	}
 }
 
 func (r *Primary) StopFrom(from int) {
@@ -85,14 +97,13 @@ func (r *Primary) StopFrom(from int) {
 }
 
 func (r *Primary) Interrupt() {
-	interruptSignal := make(chan os.Signal, 10)
-	signal.Notify(interruptSignal, os.Interrupt, syscall.SIGTERM)
-	<-interruptSignal
+	signal.Notify(r.interruptChannel, os.Interrupt, syscall.SIGTERM)
+	<-r.interruptChannel
 	r.Stop()
 }
 
 func (r *Primary) Error() {
-	err := <-r.err
+	err := <-r.errorChannel
 	logger.ErrorErr("runtime error received, exitting", err)
 	r.Stop()
 	if !errors.Is(err, ErrPrimaryTesting) {

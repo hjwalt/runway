@@ -1,4 +1,4 @@
-package runtime_test
+package runtime
 
 import (
 	"io"
@@ -6,28 +6,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hjwalt/runway/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHttp(t *testing.T) {
+func TestHttpShouldStopNormally(t *testing.T) {
 	assert := assert.New(t)
-
-	controller := NewController()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "This is my website!\n")
 	})
 
-	httpRuntime := runtime.NewHttp(
-		runtime.HttpWithPort(30080),
-		runtime.HttpWithHandler(mux),
-		runtime.HttpWithReadTimeout(5*time.Second),
-		runtime.HttpWithReadHeaderTimeout(5*time.Second),
-		runtime.HttpWithWriteTimeout(5*time.Second),
+	httpRuntime := NewHttp(
+		HttpWithPort(30080),
+		HttpWithHandler(mux),
+		HttpWithReadTimeout(5*time.Second),
+		HttpWithReadHeaderTimeout(5*time.Second),
+		HttpWithWriteTimeout(5*time.Second),
 	)
-	httpRuntime.SetController(controller)
 
 	startErr := httpRuntime.Start()
 	assert.NoError(startErr)
@@ -51,5 +47,35 @@ func TestHttp(t *testing.T) {
 	assert.Equal("This is my website!\n", string(body))
 
 	httpRuntime.Stop()
-	controller.Wait()
+	httpRuntime.Stop() // testing multiple stop will not break the system
+}
+
+func TestHttpMissingServer(t *testing.T) {
+	assert := assert.New(t)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "This is my website!\n")
+	})
+
+	httpRuntime := HttpRunnable{}
+
+	startErr := httpRuntime.Start()
+	assert.ErrorIs(startErr, ErrHttpMissingServer)
+	httpRuntime.Stop()
+}
+
+func TestHttpMissingHandler(t *testing.T) {
+	assert := assert.New(t)
+
+	httpRuntime := NewHttp(
+		HttpWithPort(30080),
+		HttpWithReadTimeout(5*time.Second),
+		HttpWithReadHeaderTimeout(5*time.Second),
+		HttpWithWriteTimeout(5*time.Second),
+	)
+
+	startErr := httpRuntime.Start()
+	assert.ErrorIs(startErr, ErrHttpMissingHandler)
+	httpRuntime.Stop()
 }
