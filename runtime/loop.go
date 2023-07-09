@@ -61,7 +61,7 @@ func (r *LoopRunnable) Run() error {
 			return err
 		}
 		if r.context.Err() != nil {
-			logger.WarnErr("functional runtime exitting via context", err)
+			logger.Info("functional runtime exitting via context")
 			return nil
 		}
 	}

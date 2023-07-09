@@ -46,7 +46,7 @@ func (r *Runner) Stop() {
 	defer r.mu.Unlock()
 	r.mu.Lock()
 
-	if r.started == false {
+	if !r.started {
 		return
 	}
 
