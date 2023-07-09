@@ -5,19 +5,18 @@ import (
 	"errors"
 
 	"github.com/hjwalt/runway/logger"
-	"github.com/hjwalt/runway/reflect"
 )
 
-type Loop[C any] interface {
-	Initialise() (C, error)
-	Cleanup(C)
-	Loop(C, context.Context, context.CancelFunc) error
+type Loop interface {
+	Start() error
+	Stop()
+	Loop(context.Context, context.CancelFunc) error
 }
 
 // constructor
-func NewLoop[C any](configurations ...Configuration[*LoopRunnable[C]]) Runtime {
-	c := &LoopRunnable[C]{}
-	c = LoopDefault[C](c)
+func NewLoop(configurations ...Configuration[*LoopRunnable]) Runtime {
+	c := &LoopRunnable{}
+	c = LoopDefault(c)
 	for _, configuration := range configurations {
 		c = configuration(c)
 	}
@@ -25,8 +24,7 @@ func NewLoop[C any](configurations ...Configuration[*LoopRunnable[C]]) Runtime {
 }
 
 // default
-func LoopDefault[C any](c *LoopRunnable[C]) *LoopRunnable[C] {
-	c.data = reflect.Construct[C]()
+func LoopDefault(c *LoopRunnable) *LoopRunnable {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	c.context = ctx
@@ -36,44 +34,43 @@ func LoopDefault[C any](c *LoopRunnable[C]) *LoopRunnable[C] {
 }
 
 // configuration
-func LoopWithLoop[C any](loop Loop[C]) Configuration[*LoopRunnable[C]] {
-	return func(c *LoopRunnable[C]) *LoopRunnable[C] {
+func LoopWithLoop(loop Loop) Configuration[*LoopRunnable] {
+	return func(c *LoopRunnable) *LoopRunnable {
 		c.loop = loop
 		return c
 	}
 }
 
 // implementation
-type LoopRunnable[C any] struct {
-	loop    Loop[C]
+type LoopRunnable struct {
+	loop    Loop
 	context context.Context
 	cancel  context.CancelFunc
-	data    C
 }
 
-func (r *LoopRunnable[C]) Start() error {
+func (r *LoopRunnable) Start() error {
 	if r.loop == nil {
 		return ErrLoopRuntimeNoLoop
 	}
 
-	data, initerr := r.loop.Initialise()
+	initerr := r.loop.Start()
 	if initerr != nil {
 		return errors.Join(ErrLoopRuntimeInitialise, initerr)
 	}
-	r.data = data
 
 	return nil
 }
 
-func (r *LoopRunnable[C]) Stop() {
+func (r *LoopRunnable) Stop() {
+	if r.loop != nil {
+		r.loop.Stop()
+	}
 	r.cancel()
 }
 
-func (r *LoopRunnable[C]) Run() error {
-	defer r.loop.Cleanup(r.data)
-
+func (r *LoopRunnable) Run() error {
 	for {
-		err := r.loop.Loop(r.data, r.context, r.cancel)
+		err := r.loop.Loop(r.context, r.cancel)
 		if err != nil {
 			logger.ErrorErr("functional runtime loop error", err)
 			return err

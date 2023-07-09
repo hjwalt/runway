@@ -34,7 +34,7 @@ func TestLoopWillStopNormally(t *testing.T) {
 			return nil
 		},
 	}
-	fnRunnable := LoopDefault(&LoopRunnable[*TestData]{
+	fnRunnable := LoopDefault(&LoopRunnable{
 		loop: loop,
 	})
 	fnRuntime := &Runner{
@@ -47,7 +47,7 @@ func TestLoopWillStopNormally(t *testing.T) {
 	assert.NoError(startErr)
 	assert.Equal(10, value)
 	assert.Equal(1, initCalled)
-	assert.Equal(1, exitCalled)
+	assert.Equal(0, exitCalled)
 }
 
 func TestLoopWillStopOnError(t *testing.T) {
@@ -77,7 +77,7 @@ func TestLoopWillStopOnError(t *testing.T) {
 			return nil
 		},
 	}
-	fnRunnable := LoopDefault(&LoopRunnable[*TestData]{
+	fnRunnable := LoopDefault(&LoopRunnable{
 		loop: loop,
 	})
 	fnRuntime := &Runner{
@@ -116,7 +116,7 @@ func TestLoopWillStopOnStop(t *testing.T) {
 		},
 	}
 	fnRuntime := NewLoop(
-		LoopWithLoop[*TestData](loop),
+		LoopWithLoop(loop),
 	)
 
 	startErr := fnRuntime.Start()
@@ -133,7 +133,7 @@ func TestLoopWillStopOnStop(t *testing.T) {
 func TestLoopMissingLoop(t *testing.T) {
 	assert := assert.New(t)
 
-	fnRunnable := LoopDefault(&LoopRunnable[*TestData]{})
+	fnRunnable := LoopDefault(&LoopRunnable{})
 	fnRuntime := &Runner{
 		runnable: fnRunnable,
 	}
@@ -170,7 +170,7 @@ func TestLoopInitialiseError(t *testing.T) {
 			return nil
 		},
 	}
-	fnRunnable := LoopDefault(&LoopRunnable[*TestData]{
+	fnRunnable := LoopDefault(&LoopRunnable{
 		loop: loop,
 	})
 	fnRuntime := &Runner{
@@ -191,17 +191,20 @@ type TestData struct {
 }
 
 type TestLoop struct {
+	data       *TestData
 	initialise func() (*TestData, error)
 	cleanup    func(*TestData)
 	loop       func(*TestData, context.CancelFunc) error
 }
 
-func (l *TestLoop) Initialise() (*TestData, error) {
-	return l.initialise()
+func (l *TestLoop) Start() error {
+	data, initErr := l.initialise()
+	l.data = data
+	return initErr
 }
-func (l *TestLoop) Cleanup(data *TestData) {
-	l.cleanup(data)
+func (l *TestLoop) Stop() {
+	l.cleanup(l.data)
 }
-func (l *TestLoop) Loop(data *TestData, ctx context.Context, cancel context.CancelFunc) error {
-	return l.loop(data, cancel)
+func (l *TestLoop) Loop(ctx context.Context, cancel context.CancelFunc) error {
+	return l.loop(l.data, cancel)
 }

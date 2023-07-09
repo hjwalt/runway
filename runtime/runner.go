@@ -21,10 +21,15 @@ func NewRunner(runnable Runnable) Runtime {
 
 type Runner struct {
 	wait     sync.WaitGroup
+	mu       sync.Mutex
+	started  bool
 	runnable Runnable
 }
 
 func (r *Runner) Start() error {
+	defer r.mu.Unlock()
+	r.mu.Lock()
+
 	if r.runnable == nil {
 		return ErrRunnerRuntimeNoRunnable
 	}
@@ -33,10 +38,19 @@ func (r *Runner) Start() error {
 	}
 	go r.Run()
 	r.wait.Add(1)
+	r.started = true
 	return nil
 }
 
 func (r *Runner) Stop() {
+	defer r.mu.Unlock()
+	r.mu.Lock()
+
+	if r.started == false {
+		return
+	}
+
+	r.started = false
 	r.runnable.Stop()
 	r.wait.Wait()
 }
