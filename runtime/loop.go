@@ -14,31 +14,16 @@ type Loop interface {
 }
 
 // constructor
-func NewLoop(configurations ...Configuration[*LoopRunnable]) Runtime {
-	c := &LoopRunnable{}
-	c = LoopDefault(c)
-	for _, configuration := range configurations {
-		c = configuration(c)
+func NewLoop(loop Loop) Runtime {
+	c := &LoopRunnable{
+		loop: loop,
 	}
-	return NewRunner(c)
-}
-
-// default
-func LoopDefault(c *LoopRunnable) *LoopRunnable {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	c.context = ctx
 	c.cancel = cancel
 
-	return c
-}
-
-// configuration
-func LoopWithLoop(loop Loop) Configuration[*LoopRunnable] {
-	return func(c *LoopRunnable) *LoopRunnable {
-		c.loop = loop
-		return c
-	}
+	return NewRunner(c)
 }
 
 // implementation

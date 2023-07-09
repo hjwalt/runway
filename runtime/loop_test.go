@@ -34,15 +34,11 @@ func TestLoopWillStopNormally(t *testing.T) {
 			return nil
 		},
 	}
-	fnRunnable := LoopDefault(&LoopRunnable{
-		loop: loop,
-	})
-	fnRuntime := &Runner{
-		runnable: fnRunnable,
-	}
+
+	fnRuntime := NewLoop(loop)
 
 	startErr := fnRuntime.Start()
-	fnRuntime.wait.Wait()
+	fnRuntime.(*Runner).wait.Wait()
 
 	assert.NoError(startErr)
 	assert.Equal(10, value)
@@ -77,15 +73,11 @@ func TestLoopWillStopOnError(t *testing.T) {
 			return nil
 		},
 	}
-	fnRunnable := LoopDefault(&LoopRunnable{
-		loop: loop,
-	})
-	fnRuntime := &Runner{
-		runnable: fnRunnable,
-	}
+
+	fnRuntime := NewLoop(loop)
 
 	startErr := fnRuntime.Start()
-	fnRuntime.wait.Wait()
+	fnRuntime.(*Runner).wait.Wait()
 	fnRuntime.Stop()
 
 	assert.NoError(startErr)
@@ -115,9 +107,8 @@ func TestLoopWillStopOnStop(t *testing.T) {
 			return nil
 		},
 	}
-	fnRuntime := NewLoop(
-		LoopWithLoop(loop),
-	)
+
+	fnRuntime := NewLoop(loop)
 
 	startErr := fnRuntime.Start()
 	time.Sleep(time.Millisecond)
@@ -133,10 +124,7 @@ func TestLoopWillStopOnStop(t *testing.T) {
 func TestLoopMissingLoop(t *testing.T) {
 	assert := assert.New(t)
 
-	fnRunnable := LoopDefault(&LoopRunnable{})
-	fnRuntime := &Runner{
-		runnable: fnRunnable,
-	}
+	fnRuntime := NewLoop(nil)
 
 	startErr := fnRuntime.Start()
 	fnRuntime.Stop()
@@ -170,12 +158,7 @@ func TestLoopInitialiseError(t *testing.T) {
 			return nil
 		},
 	}
-	fnRunnable := LoopDefault(&LoopRunnable{
-		loop: loop,
-	})
-	fnRuntime := &Runner{
-		runnable: fnRunnable,
-	}
+	fnRuntime := NewLoop(loop)
 
 	startErr := fnRuntime.Start()
 	fnRuntime.Stop()

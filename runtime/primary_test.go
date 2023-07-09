@@ -31,9 +31,7 @@ func TestPrimaryWillStopNormally(t *testing.T) {
 			return nil
 		},
 	}
-	fnRuntime := NewLoop(
-		LoopWithLoop(loop),
-	)
+	fnRuntime := NewLoop(loop)
 
 	startErr := Start([]Runtime{
 		fnRuntime,
@@ -73,9 +71,7 @@ func TestPrimaryInitialiseErrorWillNotStart(t *testing.T) {
 			return nil
 		},
 	}
-	fnRuntime := NewLoop(
-		LoopWithLoop(loop),
-	)
+	fnRuntime := NewLoop(loop)
 
 	startErr := Start([]Runtime{
 		fnRuntime,
@@ -109,9 +105,7 @@ func TestPrimaryWillStopOnError(t *testing.T) {
 			return ErrPrimaryTesting
 		},
 	}
-	fnRuntime := NewLoop(
-		LoopWithLoop(loop),
-	)
+	fnRuntime := NewLoop(loop)
 
 	startErr := Start([]Runtime{
 		fnRuntime,
@@ -145,9 +139,7 @@ func TestPrimaryWillStopOnSignal(t *testing.T) {
 			return nil
 		},
 	}
-	fnRuntime := NewLoop(
-		LoopWithLoop(loop),
-	)
+	fnRuntime := NewLoop(loop)
 
 	startErr := Start([]Runtime{
 		fnRuntime,
