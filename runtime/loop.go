@@ -11,7 +11,7 @@ import (
 type Loop[C any] interface {
 	Initialise() (C, error)
 	Cleanup(C)
-	Loop(C, context.CancelFunc) error
+	Loop(C, context.Context, context.CancelFunc) error
 }
 
 // constructor
@@ -73,7 +73,7 @@ func (r *LoopRunnable[C]) Run() error {
 	defer r.loop.Cleanup(r.data)
 
 	for {
-		err := r.loop.Loop(r.data, r.cancel)
+		err := r.loop.Loop(r.data, r.context, r.cancel)
 		if err != nil {
 			logger.ErrorErr("functional runtime loop error", err)
 			return err

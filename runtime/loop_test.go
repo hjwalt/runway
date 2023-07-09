@@ -202,6 +202,6 @@ func (l *TestLoop) Initialise() (*TestData, error) {
 func (l *TestLoop) Cleanup(data *TestData) {
 	l.cleanup(data)
 }
-func (l *TestLoop) Loop(data *TestData, cancel context.CancelFunc) error {
+func (l *TestLoop) Loop(data *TestData, ctx context.Context, cancel context.CancelFunc) error {
 	return l.loop(data, cancel)
 }
