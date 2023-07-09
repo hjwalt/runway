@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/hjwalt/runway/format"
 	"github.com/hjwalt/runway/inverse"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,6 +19,18 @@ func TestGetLastResolveOneLevel(t *testing.T) {
 
 	assert.NoError(err)
 	assert.Equal("test-1", val)
+}
+
+func TestGetLastResolveTypeCasting(t *testing.T) {
+	assert := assert.New(t)
+	inverse.Reset()
+
+	inverse.Register("strfmt", func(ctx context.Context) (any, error) { return format.String(), nil })
+
+	val, err := inverse.GetLast[format.Format[string]](context.Background(), "strfmt")
+
+	assert.NoError(err)
+	assert.Equal(format.String(), val)
 }
 
 func TestGetLastResolveLastForQualifier(t *testing.T) {
