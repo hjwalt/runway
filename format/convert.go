@@ -2,7 +2,6 @@ package format
 
 import (
 	"github.com/hjwalt/runway/logger"
-	"github.com/hjwalt/runway/reflect"
 )
 
 // assuming byte compatibility, i.e. bytes <-> proto, string <-> json
@@ -16,7 +15,7 @@ func Convert[V1 any, V2 any](
 	valueBytes, err := v1.Marshal(v)
 	if err != nil {
 		logger.ErrorErr("conversion value serialisation failure", err)
-		return reflect.Construct[V2](), err
+		return v2.Default(), err
 	}
 
 	// deserialise value

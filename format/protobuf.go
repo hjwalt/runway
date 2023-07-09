@@ -19,7 +19,7 @@ func (helper ProtobufFormat[T]) Unmarshal(value []byte) (T, error) {
 	protoMessage := helper.Default()
 	err := proto.Unmarshal(value, protoMessage)
 	if err != nil {
-		return *new(T), err
+		return helper.Default(), err
 	}
 	return protoMessage, nil
 }

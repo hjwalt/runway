@@ -14,9 +14,13 @@ func (helper JsonFormat[T]) Default() T {
 
 func (helper JsonFormat[T]) Marshal(value T) ([]byte, error) {
 	if reflect.IsNil(value) {
-		return nil, nil
+		return []byte{}, nil
 	}
-	return json.Marshal(value)
+	if reflect.IsPointer(value) {
+		return json.Marshal(value)
+	} else {
+		return json.Marshal(&value)
+	}
 }
 
 func (helper JsonFormat[T]) Unmarshal(value []byte) (T, error) {
@@ -24,8 +28,13 @@ func (helper JsonFormat[T]) Unmarshal(value []byte) (T, error) {
 		return helper.Default(), nil
 	}
 	jsonMessage := helper.Default()
-	err := json.Unmarshal(value, jsonMessage)
-	return jsonMessage, err
+	if reflect.IsPointer(jsonMessage) {
+		err := json.Unmarshal(value, jsonMessage)
+		return jsonMessage, err
+	} else {
+		err := json.Unmarshal(value, &jsonMessage)
+		return jsonMessage, err
+	}
 }
 
 func Json[T any]() Format[T] {
