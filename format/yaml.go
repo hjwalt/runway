@@ -13,7 +13,7 @@ func (helper YamlFormat[T]) Default() T {
 
 func (helper YamlFormat[T]) Marshal(value T) ([]byte, error) {
 	if reflect.IsNil(value) {
-		return nil, nil
+		return []byte{}, nil
 	}
 	return yaml.Marshal(value)
 }

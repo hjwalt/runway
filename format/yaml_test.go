@@ -7,20 +7,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type TestJsonStruct struct {
-	Name  string
-	Value int64
+type TestYamlStruct struct {
+	Name  string `yaml:"name"`
+	Value int64  `yaml:"value"`
 }
 
-func TestJsonFormat(t *testing.T) {
+func TestYamlFormat(t *testing.T) {
 	assert := assert.New(t)
 
-	f := format.Json[TestJsonStruct]()
-	v := TestJsonStruct{
+	f := format.Yaml[TestYamlStruct]()
+	v := TestYamlStruct{
 		Name:  "test",
 		Value: 1234567890,
 	}
-	b := []byte(`{"Name":"test","Value":1234567890}`)
+	b := []byte(`name: test
+value: 1234567890
+`)
 
 	vb, em := f.Marshal(v)
 	assert.NoError(em)
@@ -32,15 +34,17 @@ func TestJsonFormat(t *testing.T) {
 	assert.Equal(v, bv)
 }
 
-func TestJsonFormatPointer(t *testing.T) {
+func TestYamlFormatPointer(t *testing.T) {
 	assert := assert.New(t)
 
-	f := format.Json[*TestJsonStruct]()
-	v := &TestJsonStruct{
+	f := format.Yaml[*TestYamlStruct]()
+	v := &TestYamlStruct{
 		Name:  "test",
 		Value: 1234567890,
 	}
-	b := []byte(`{"Name":"test","Value":1234567890}`)
+	b := []byte(`name: test
+value: 1234567890
+`)
 
 	vb, em := f.Marshal(v)
 	assert.NoError(em)
@@ -52,10 +56,10 @@ func TestJsonFormatPointer(t *testing.T) {
 	assert.Equal(v, bv)
 }
 
-func TestJsonFormatEmptyValue(t *testing.T) {
+func TestYamlFormatEmptyValue(t *testing.T) {
 	assert := assert.New(t)
 
-	f := format.Json[*TestJsonStruct]()
+	f := format.Yaml[*TestYamlStruct]()
 
 	vb, em := f.Marshal(nil)
 	assert.NoError(em)
@@ -63,5 +67,5 @@ func TestJsonFormatEmptyValue(t *testing.T) {
 
 	bv, eu := f.Unmarshal(nil)
 	assert.NoError(eu)
-	assert.Equal(&TestJsonStruct{}, bv)
+	assert.Equal(&TestYamlStruct{}, bv)
 }

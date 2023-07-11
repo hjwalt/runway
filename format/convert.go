@@ -1,7 +1,7 @@
 package format
 
 import (
-	"github.com/hjwalt/runway/logger"
+	"errors"
 )
 
 // assuming byte compatibility, i.e. bytes <-> proto, string <-> json
@@ -12,12 +12,21 @@ func Convert[V1 any, V2 any](
 ) (V2, error) {
 
 	// serialise value
-	valueBytes, err := v1.Marshal(v)
-	if err != nil {
-		logger.ErrorErr("conversion value serialisation failure", err)
-		return v2.Default(), err
+	valueBytes, marshalErr := v1.Marshal(v)
+	if marshalErr != nil {
+		return v2.Default(), errors.Join(ErrFormatConversionMarshal, marshalErr)
 	}
 
 	// deserialise value
-	return v2.Unmarshal(valueBytes)
+	nextValue, unmarshallErr := v2.Unmarshal(valueBytes)
+	if unmarshallErr != nil {
+		return v2.Default(), errors.Join(ErrFormatConversionUnmarshal, unmarshallErr)
+	}
+
+	return nextValue, nil
 }
+
+var (
+	ErrFormatConversionMarshal   = errors.New("format conversion error")
+	ErrFormatConversionUnmarshal = errors.New("format conversion error")
+)

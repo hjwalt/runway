@@ -1,3 +1,4 @@
+MODULE=github.com/hjwalt/runway
 test:
 	go test ./... -cover -coverprofile cover.out 
 	
@@ -20,3 +21,14 @@ update:
 	go get -u ./...
 	go mod tidy
 	go fmt ./...
+
+# --------------------
+
+proto: RUN
+	rm -rf $$GOPATH/$(MODULE)/ ;\
+	protoc -I=. --go_out=$$GOPATH **/*.proto ;\
+	cp -r $$GOPATH/$(MODULE)/* .
+
+# --------------------
+
+RUN:

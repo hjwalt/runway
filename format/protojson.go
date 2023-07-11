@@ -13,11 +13,11 @@ func (helper ProtojsonFormat[T]) Default() T {
 }
 
 func (helper ProtojsonFormat[T]) Marshal(value T) ([]byte, error) {
-	jsonbytes, err := protojson.Marshal(value)
-	if err != nil {
-		return nil, err
+	marshaller := protojson.MarshalOptions{
+		Multiline: false,
+		Indent:    "",
 	}
-	return jsonbytes, err
+	return marshaller.Marshal(value)
 }
 
 func (helper ProtojsonFormat[T]) Unmarshal(value []byte) (T, error) {
