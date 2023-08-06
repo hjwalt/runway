@@ -5,6 +5,19 @@ import (
 )
 
 func GetAll[T any](ctx context.Context, qualifier string) ([]T, error) {
+	cachedInstances, cachedExist := qualifierInjectedAll[qualifier]
+	if cachedExist {
+		results := make([]T, len(cachedInstances))
+		for i, cached := range cachedInstances {
+			cachedCasted, castedOk := cached.(T)
+			if !castedOk {
+				return results, ErrorCastingFailure(qualifier)
+			}
+			results[i] = cachedCasted
+		}
+		return results, nil
+	}
+
 	// Check for context and loop
 	if ctx == nil {
 		return make([]T, 0), ErrorNilContext(qualifier)
@@ -42,6 +55,12 @@ func GetAll[T any](ctx context.Context, qualifier string) ([]T, error) {
 	if !outerCastOk {
 		return resultList, ErrorCastingFailure(qualifier)
 	}
+
+	anyArray := make([]any, len(resultList))
+	for i, resAny := range resultList {
+		anyArray[i] = resAny
+	}
+	qualifierInjectedAll[qualifier] = anyArray
 
 	return resultList, nil
 }

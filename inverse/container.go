@@ -13,6 +13,8 @@ var qualifierInjectorMap = map[string][]Injector[any]{}
 
 var qualifierInjectedLast = map[string]any{}
 
+var qualifierInjectedAll = map[string][]any{}
+
 func Reset() {
 	qualifierMutex.Lock()
 	defer qualifierMutex.Unlock()
@@ -23,6 +25,7 @@ func Reset() {
 
 func Release() {
 	qualifierInjectedLast = map[string]any{}
+	qualifierInjectedAll = map[string][]any{}
 }
 
 func Register[T any](qualifier string, injector Injector[T]) {

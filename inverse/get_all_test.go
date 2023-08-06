@@ -23,6 +23,52 @@ func TestGetAllResolveOneLevel(t *testing.T) {
 	assert.Equal("test-1-next", val[1])
 }
 
+func TestGetAllResolveCached(t *testing.T) {
+	assert := assert.New(t)
+	inverse.Reset()
+
+	inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+	inverse.Register("test-1", func(ctx context.Context) (string, error) { return "test-1-next", nil })
+
+	val, err := inverse.GetAll[string](context.Background(), "test-1")
+
+	assert.NoError(err)
+	assert.Equal(2, len(val))
+	assert.Equal("test-1", val[0])
+	assert.Equal("test-1-next", val[1])
+
+	inverse.Register("test-1", func(ctx context.Context) (string, error) { return "test-1-new", nil })
+
+	val, err = inverse.GetAll[string](context.Background(), "test-1")
+
+	assert.NoError(err)
+	assert.Equal(2, len(val))
+	assert.Equal("test-1", val[0])
+	assert.Equal("test-1-next", val[1])
+}
+
+func TestGetAllResolveCachedWrongTypecast(t *testing.T) {
+	assert := assert.New(t)
+	inverse.Reset()
+
+	inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+	inverse.Register("test-1", func(ctx context.Context) (string, error) { return "test-1-next", nil })
+
+	val, err := inverse.GetAll[string](context.Background(), "test-1")
+
+	assert.NoError(err)
+	assert.Equal(2, len(val))
+	assert.Equal("test-1", val[0])
+	assert.Equal("test-1-next", val[1])
+
+	inverse.Register("test-1", func(ctx context.Context) (string, error) { return "test-1-new", nil })
+
+	_, err = inverse.GetAll[int](context.Background(), "test-1")
+
+	assert.Error(err)
+	assert.Equal(inverse.ErrorCastingFailure("test-1"), err)
+}
+
 func TestGetAllResolveTwoLevel(t *testing.T) {
 	assert := assert.New(t)
 	inverse.Reset()
