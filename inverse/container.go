@@ -3,9 +3,6 @@ package inverse
 import (
 	"context"
 	"sync"
-
-	"github.com/hjwalt/runway/logger"
-	"go.uber.org/zap"
 )
 
 type Injector[T any] func(context.Context) (T, error)
@@ -46,9 +43,7 @@ func RegisterInstance[T any](qualifier string, instance T) {
 }
 
 func RegisterInstances[T any](qualifier string, instances []T) {
-	logger.Info("len", zap.Int("len", len(instances)))
 	for _, instance := range instances {
-		logger.Info("injecting")
 		RegisterInstance[T](qualifier, instance)
 	}
 }
