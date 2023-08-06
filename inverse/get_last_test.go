@@ -13,7 +13,7 @@ func TestGetLastResolveOneLevel(t *testing.T) {
 	assert := assert.New(t)
 	inverse.Reset()
 
-	inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+	inverse.Register("test-1", func(ctx context.Context) (string, error) { return "test-1", nil })
 
 	val, err := inverse.GetLast[string](context.Background(), "test-1")
 
@@ -89,10 +89,10 @@ func TestGetLastResolveFunction(t *testing.T) {
 	inverse.Reset()
 
 	inverse.Register("test-1", func(ctx context.Context) (any, error) {
-		return inverse.Injector(func(ctx context.Context) (any, error) { return "test-1", nil }), nil
+		return inverse.Injector[string](func(ctx context.Context) (string, error) { return "test-1", nil }), nil
 	})
 
-	val, err := inverse.GetLast[inverse.Injector](context.Background(), "test-1")
+	val, err := inverse.GetLast[inverse.Injector[string]](context.Background(), "test-1")
 
 	assert.NoError(err)
 	assert.NotNil(val)

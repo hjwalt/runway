@@ -13,7 +13,7 @@ func TestGetAllResolveOneLevel(t *testing.T) {
 	inverse.Reset()
 
 	inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
-	inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1-next", nil })
+	inverse.Register("test-1", func(ctx context.Context) (string, error) { return "test-1-next", nil })
 
 	val, err := inverse.GetAll[string](context.Background(), "test-1")
 
