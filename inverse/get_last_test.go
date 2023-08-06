@@ -186,3 +186,27 @@ func TestGetLastFailForResolveLoop(t *testing.T) {
 	assert.Equal(inverse.ErrorResolveLoop("test-1"), err)
 	assert.Equal("", val)
 }
+
+func TestGetLastResolveInstance(t *testing.T) {
+	assert := assert.New(t)
+	inverse.Reset()
+
+	inverse.RegisterInstance("test-1", "test-value")
+
+	val, err := inverse.GetLast[string](context.Background(), "test-1")
+
+	assert.NoError(err)
+	assert.Equal("test-value", val)
+}
+
+func TestGetLastResolveInstancesLastValue(t *testing.T) {
+	assert := assert.New(t)
+	inverse.Reset()
+
+	inverse.RegisterInstances("test-1", "test-value", "test-value-last")
+
+	val, err := inverse.GetLast[string](context.Background(), "test-1")
+
+	assert.NoError(err)
+	assert.Equal("test-value-last", val)
+}
