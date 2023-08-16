@@ -3,26 +3,23 @@ package structure
 import "sync"
 
 type Set[T comparable] interface {
-	Add(T)
-	AddAll(...T)
+	Add(...T)
+	Contain(...T) bool
+	Remove(...T)
 }
 
 func NewSet[T comparable]() Set[T] {
-	return &MapSet[T]{}
+	return &mapSet[T]{
+		internal: map[T]bool{},
+	}
 }
 
-type MapSet[T comparable] struct {
+type mapSet[T comparable] struct {
 	internal map[T]bool
 	sync     sync.Mutex
 }
 
-func (s *MapSet[T]) Add(t T) {
-	s.sync.Lock()
-	defer s.sync.Unlock()
-	s.internal[t] = true
-}
-
-func (s *MapSet[T]) AddAll(ts ...T) {
+func (s *mapSet[T]) Add(ts ...T) {
 	s.sync.Lock()
 	defer s.sync.Unlock()
 	for _, t := range ts {
@@ -30,14 +27,7 @@ func (s *MapSet[T]) AddAll(ts ...T) {
 	}
 }
 
-func (s *MapSet[T]) Contain(t T) bool {
-	s.sync.Lock()
-	defer s.sync.Unlock()
-	_, tPresent := s.internal[t]
-	return tPresent
-}
-
-func (s *MapSet[T]) ContainAll(ts ...T) bool {
+func (s *mapSet[T]) Contain(ts ...T) bool {
 	s.sync.Lock()
 	defer s.sync.Unlock()
 	for _, t := range ts {
@@ -48,13 +38,7 @@ func (s *MapSet[T]) ContainAll(ts ...T) bool {
 	return true
 }
 
-func (s *MapSet[T]) Remove(t T) {
-	s.sync.Lock()
-	defer s.sync.Unlock()
-	delete(s.internal, t)
-}
-
-func (s *MapSet[T]) RemoveAll(ts ...T) {
+func (s *mapSet[T]) Remove(ts ...T) {
 	s.sync.Lock()
 	defer s.sync.Unlock()
 	for _, t := range ts {
