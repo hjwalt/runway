@@ -36,4 +36,11 @@ func TestMultiMap(t *testing.T) {
 	assert.False(mm.Contain("test"))
 	assert.Equal([]string{}, mm.Get("test"))
 
+	mm.Add("test1", "1", "2", "3")
+	mm.Add("test2", "3", "4", "5")
+
+	assert.Equal(map[string][]string{
+		"test1": []string{"1", "2", "3"},
+		"test2": []string{"3", "4", "5"},
+	}, mm.GetAll())
 }

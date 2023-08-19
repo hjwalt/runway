@@ -5,6 +5,7 @@ import "sync"
 type MultiMap[K comparable, V any] interface {
 	Add(K, ...V)
 	Get(K) []V
+	GetAll() map[K][]V
 	Contain(K) bool
 	Remove(K)
 	Clear()
@@ -39,6 +40,16 @@ func (mm *arrayMultiMap[K, V]) Get(k K) []V {
 	} else {
 		return []V{}
 	}
+}
+
+func (mm *arrayMultiMap[K, V]) GetAll() map[K][]V {
+	mm.sync.Lock()
+	defer mm.sync.Unlock()
+	duplicatedMap := map[K][]V{}
+	for k, v := range mm.internal {
+		duplicatedMap[k] = v
+	}
+	return duplicatedMap
 }
 
 func (mm *arrayMultiMap[K, V]) Contain(k K) bool {
