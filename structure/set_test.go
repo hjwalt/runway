@@ -19,6 +19,7 @@ func TestSet(t *testing.T) {
 	assert.True(set.Contain("test1", "test2"))
 
 	set.Remove("test1")
+	set.Remove("unknown")
 	assert.True(set.Contain("test", "test2"))
 	assert.False(set.Contain("test1"))
 
