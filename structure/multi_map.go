@@ -5,6 +5,7 @@ import "sync"
 type MultiMap[K comparable, V any] interface {
 	Add(K, ...V)
 	Get(K) []V
+	Size(K) int
 	GetAll() map[K][]V
 	Contain(K) bool
 	Remove(K)
@@ -39,6 +40,16 @@ func (mm *arrayMultiMap[K, V]) Get(k K) []V {
 		return currVals
 	} else {
 		return []V{}
+	}
+}
+
+func (mm *arrayMultiMap[K, V]) Size(k K) int {
+	mm.sync.Lock()
+	defer mm.sync.Unlock()
+	if currVals, kExist := mm.internal[k]; kExist {
+		return len(currVals)
+	} else {
+		return 0
 	}
 }
 

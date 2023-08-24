@@ -19,6 +19,7 @@ func TestMultiMap(t *testing.T) {
 
 	assert.False(mm.Contain("unknown"))
 	assert.Equal([]string{}, mm.Get("unknown"))
+	assert.Equal(0, mm.Size("unknown"))
 
 	mm.Clear()
 
@@ -30,6 +31,7 @@ func TestMultiMap(t *testing.T) {
 
 	assert.True(mm.Contain("test"))
 	assert.Equal([]string{"1", "2", "3", "3", "4", "5"}, mm.Get("test"))
+	assert.Equal(6, mm.Size("test"))
 
 	mm.Remove("test")
 
