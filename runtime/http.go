@@ -12,24 +12,20 @@ import (
 )
 
 // constructor
-func NewHttp(configurations ...Configuration[*HttpRunnable]) Runtime {
-	c := &HttpRunnable{}
-	c = HttpDefault(c)
-	for _, configuration := range configurations {
-		c = configuration(c)
-	}
-	return NewRunner(c)
-}
-
-// default
-func HttpDefault(c *HttpRunnable) *HttpRunnable {
-	c.server = &http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-	}
-	return c
-}
+var NewHttp = ConstructorFor[*HttpRunnable, Runtime](
+	func() *HttpRunnable {
+		return &HttpRunnable{
+			server: &http.Server{
+				Addr:         ":8080",
+				ReadTimeout:  5 * time.Second,
+				WriteTimeout: 5 * time.Second,
+			},
+		}
+	},
+	func(hr *HttpRunnable) Runtime {
+		return NewRunner(hr)
+	},
+)
 
 // configuration
 func HttpWithHandler(handler http.Handler) Configuration[*HttpRunnable] {
