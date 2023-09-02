@@ -62,7 +62,7 @@ func TestGetLastResolveWithConfigurationRequiredWithConfig(t *testing.T) {
 		runtime.NewHttp,
 	)
 
-	resolver.AddConfig(func(ctx context.Context) (runtime.Configuration[*runtime.HttpRunnable], error) {
+	resolver.AddConfig(func(ctx context.Context, ci inverse.Container) (runtime.Configuration[*runtime.HttpRunnable], error) {
 		return runtime.HttpWithPort(8080), nil
 	})
 	resolver.Register()

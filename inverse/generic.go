@@ -7,7 +7,7 @@ import (
 )
 
 func GenericAdd[T any](c Container, qualifier string, injector Injector[T]) {
-	c.Add(qualifier, func(ctx context.Context) (any, error) { return injector(ctx) })
+	c.Add(qualifier, func(ctx context.Context, ic Container) (any, error) { return injector(ctx, ic) })
 }
 
 func GenericGetLast[T any](c Container, ctx context.Context, qualifier string) (T, error) {

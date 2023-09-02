@@ -19,7 +19,7 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "get last",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-1")
@@ -31,7 +31,7 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "get last from cache",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-new", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-new", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-1")
@@ -52,6 +52,22 @@ func TestContainerResolveLast(t *testing.T) {
 			},
 		},
 		{
+			name:  "get multi level",
+			reset: true,
+			resolverAdder: func(c inverse.Container) {
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1", nil })
+				c.Add("test-2", func(ctx context.Context, ci inverse.Container) (any, error) {
+					test1, _ := inverse.GenericGetLast[string](ci, ctx, "test-1")
+					return test1 + "test-2", nil
+				})
+			},
+			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
+				val, err := c.Get(context.Background(), "test-2")
+				a.NoError(err)
+				a.Equal("test-1test-2", val)
+			},
+		},
+		{
 			name:  "get val",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
@@ -67,8 +83,8 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "get last multiple added",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-a", nil })
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-b", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-1")
@@ -80,7 +96,7 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "fail missing context",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-fail", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-fail", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(nil, "test-1")
@@ -95,7 +111,7 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "fail missing resolver",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-fail", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-fail", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-2")
@@ -110,21 +126,21 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "fail resolve loop critical error",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) {
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) {
 					_, err := c.Get(ctx, "test-2")
 					if err != nil {
 						return "", err
 					}
 					return "test-1", nil
 				})
-				c.Add("test-2", func(ctx context.Context) (any, error) {
+				c.Add("test-2", func(ctx context.Context, ci inverse.Container) (any, error) {
 					_, err := c.Get(ctx, "test-1")
 					if err != nil {
 						return "", err
 					}
 					return "test-2", nil
 				})
-				c.Add("test-3", func(ctx context.Context) (any, error) { return "test-3-no-loop", nil })
+				c.Add("test-3", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-3-no-loop", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-2")
@@ -139,7 +155,7 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "critical error add does not do anything",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-critical", func(ctx context.Context) (any, error) { return "test-critical", nil })
+				c.Add("test-critical", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-critical", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-critical")
@@ -163,7 +179,7 @@ func TestContainerResolveLast(t *testing.T) {
 			name:  "critical error cleaned on reset",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.Get(context.Background(), "test-1")
@@ -197,8 +213,8 @@ func TestContainerResolveAll(t *testing.T) {
 			name:  "get all",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-a", nil })
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-b", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.GetAll(context.Background(), "test-1")
@@ -212,7 +228,7 @@ func TestContainerResolveAll(t *testing.T) {
 			name:  "get last from cache",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-new", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-new", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.GetAll(context.Background(), "test-1")
@@ -226,8 +242,8 @@ func TestContainerResolveAll(t *testing.T) {
 			name:  "fail missing context",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-a-fail", nil })
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-b-fail", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a-fail", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b-fail", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.GetAll(nil, "test-1")
@@ -245,8 +261,8 @@ func TestContainerResolveAll(t *testing.T) {
 			name:  "fail missing resolver",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-a-fail", nil })
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-b-fail", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a-fail", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b-fail", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.GetAll(context.Background(), "test-2")
@@ -264,21 +280,21 @@ func TestContainerResolveAll(t *testing.T) {
 			name:  "fail resolve loop critical error",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) {
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) {
 					_, err := c.Get(ctx, "test-2")
 					if err != nil {
 						return "", err
 					}
 					return "test-1", nil
 				})
-				c.Add("test-2", func(ctx context.Context) (any, error) {
+				c.Add("test-2", func(ctx context.Context, ci inverse.Container) (any, error) {
 					_, err := c.Get(ctx, "test-1")
 					if err != nil {
 						return "", err
 					}
 					return "test-2", nil
 				})
-				c.Add("test-3", func(ctx context.Context) (any, error) { return "test-3-no-loop", nil })
+				c.Add("test-3", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-3-no-loop", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := c.GetAll(context.Background(), "test-2")

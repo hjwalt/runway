@@ -19,7 +19,7 @@ func TestContainerGenericResolveLast(t *testing.T) {
 			name:  "get last",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := inverse.GenericGetLast[string](c, context.Background(), "test-1")
@@ -45,7 +45,7 @@ func TestContainerGenericResolveLast(t *testing.T) {
 			name:  "critical error reset",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := inverse.GenericGetLast[string](c, context.Background(), "test-1")
@@ -79,8 +79,8 @@ func TestContainerGenericResolveAll(t *testing.T) {
 			name:  "get all",
 			reset: false,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-a", nil })
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-b", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := inverse.GenericGetAll[string](c, context.Background(), "test-1")
@@ -108,8 +108,8 @@ func TestContainerGenericResolveAll(t *testing.T) {
 			name:  "critical error reset",
 			reset: true,
 			resolverAdder: func(c inverse.Container) {
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-a", nil })
-				c.Add("test-1", func(ctx context.Context) (any, error) { return "test-1-b", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a", nil })
+				c.Add("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b", nil })
 			},
 			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
 				val, err := inverse.GenericGetAll[string](c, context.Background(), "test-1")

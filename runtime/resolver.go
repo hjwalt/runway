@@ -45,8 +45,8 @@ func (r *resolver[T, I]) AddConfigVal(config Configuration[T]) {
 }
 
 func (r *resolver[T, I]) Register() {
-	r.container.Add(r.qualifier, func(ctx context.Context) (any, error) {
-		configurations, getConfigurationError := inverse.GenericGetAll[Configuration[T]](r.container, ctx, QualifierConfig(r.qualifier))
+	r.container.Add(r.qualifier, func(ctx context.Context, ci inverse.Container) (any, error) {
+		configurations, getConfigurationError := inverse.GenericGetAll[Configuration[T]](ci, ctx, QualifierConfig(r.qualifier))
 		if getConfigurationError != nil {
 			logger.ErrorErr("test", getConfigurationError)
 			if r.configurationRequired || !errors.Is(getConfigurationError, inverse.ErrInverseResolverMissing) {

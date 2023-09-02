@@ -17,7 +17,7 @@ func NewContainer() Container {
 	}
 }
 
-type Resolver func(context.Context) (any, error)
+type Resolver func(context.Context, Container) (any, error)
 
 func Qualifier(name string) qualifier {
 	return qualifier{Name: name}
@@ -99,7 +99,7 @@ func (c *container) AddVal(q string, v any) {
 		return
 	}
 
-	c.Add(q, func(ctx context.Context) (any, error) { return v, nil })
+	c.Add(q, func(ctx context.Context, container Container) (any, error) { return v, nil })
 }
 
 func (c *container) Get(ctx context.Context, q string) (any, error) {
@@ -186,7 +186,7 @@ func (c *container) getResolver(ctx context.Context, q string) ([]Resolver, erro
 }
 
 func (c *container) resolve(ctx context.Context, q string, resolver Resolver) (any, error) {
-	injectedVal, injectedErr := resolver(context.WithValue(ctx, Qualifier(q), "already-resolved"))
+	injectedVal, injectedErr := resolver(context.WithValue(ctx, Qualifier(q), "already-resolved"), c)
 	if injectedErr != nil {
 		return nil, errors.Join(injectedErr, ErrInverseResolveError, fmt.Errorf("qualifier being resolved is %s", q))
 	}

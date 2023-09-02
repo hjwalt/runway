@@ -19,7 +19,7 @@ func TestGlobalResolveLast(t *testing.T) {
 			name:  "get last",
 			reset: true,
 			resolverAdder: func() {
-				inverse.Register[string]("test-1", func(ctx context.Context) (string, error) { return "test-1", nil })
+				inverse.Register[string]("test-1", func(ctx context.Context, ci inverse.Container) (string, error) { return "test-1", nil })
 			},
 			test: func(t *testing.T, a *assert.Assertions) {
 				val, err := inverse.GetLast[string](context.Background(), "test-1")
@@ -79,8 +79,8 @@ func TestGlobalResolveLast(t *testing.T) {
 			name:  "get function",
 			reset: true,
 			resolverAdder: func() {
-				inverse.Register("test-1", func(ctx context.Context) (any, error) {
-					return inverse.Injector[string](func(ctx context.Context) (string, error) { return "test-1", nil }), nil
+				inverse.Register("test-1", func(ctx context.Context, ci inverse.Container) (any, error) {
+					return inverse.Injector[string](func(ctx context.Context, ci inverse.Container) (string, error) { return "test-1", nil }), nil
 				})
 			},
 			test: func(t *testing.T, a *assert.Assertions) {
@@ -113,8 +113,8 @@ func TestGlobalResolveAll(t *testing.T) {
 			name:  "get all",
 			reset: true,
 			resolverAdder: func() {
-				inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1-a", nil })
-				inverse.Register("test-1", func(ctx context.Context) (any, error) { return "test-1-b", nil })
+				inverse.Register("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-a", nil })
+				inverse.Register("test-1", func(ctx context.Context, ci inverse.Container) (any, error) { return "test-1-b", nil })
 			},
 			test: func(t *testing.T, a *assert.Assertions) {
 				val, err := inverse.GetAll[string](context.Background(), "test-1")
