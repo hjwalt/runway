@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/hjwalt/runway/inverse"
-	"github.com/hjwalt/runway/logger"
 	"github.com/hjwalt/runway/reflect"
 )
 
@@ -48,7 +47,6 @@ func (r *resolver[T, I]) Register() {
 	r.container.Add(r.qualifier, func(ctx context.Context, ci inverse.Container) (any, error) {
 		configurations, getConfigurationError := inverse.GenericGetAll[Configuration[T]](ci, ctx, QualifierConfig(r.qualifier))
 		if getConfigurationError != nil {
-			logger.ErrorErr("test", getConfigurationError)
 			if r.configurationRequired || !errors.Is(getConfigurationError, inverse.ErrInverseResolverMissing) {
 				return reflect.Construct[T](), getConfigurationError
 			}
