@@ -6,6 +6,10 @@ import (
 	"github.com/hjwalt/runway/reflect"
 )
 
+func GenericAdd[T any](c Container, qualifier string, injector Injector[T]) {
+	c.Add(qualifier, func(ctx context.Context) (any, error) { return injector(ctx) })
+}
+
 func GenericGetLast[T any](c Container, ctx context.Context, qualifier string) (T, error) {
 	injectedVal, err := c.Get(ctx, qualifier)
 	if err != nil {

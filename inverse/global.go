@@ -17,7 +17,7 @@ func Release() {
 }
 
 func Register[T any](qualifier string, injector Injector[T]) {
-	Global.Add(qualifier, func(ctx context.Context) (any, error) { return injector(ctx) })
+	GenericAdd(Global, qualifier, injector)
 }
 
 func RegisterInstance[T any](qualifier string, instance T) {

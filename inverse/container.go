@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+
+	"github.com/hjwalt/runway/logger"
 )
 
 func NewContainer() Container {
@@ -77,6 +79,7 @@ func (c *container) Error() error {
 
 func (c *container) Add(q string, r Resolver) {
 	if !c.Valid() {
+		logger.Error("invalid container")
 		return
 	}
 
@@ -92,6 +95,7 @@ func (c *container) Add(q string, r Resolver) {
 
 func (c *container) AddVal(q string, v any) {
 	if !c.Valid() {
+		logger.Error("invalid container")
 		return
 	}
 
