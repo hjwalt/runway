@@ -69,6 +69,6 @@ func TestGetLastResolveWithConfigurationRequiredShouldFail(t *testing.T) {
 	httpRunnable, err := inverse.GetLast[runtime.Runtime](context.Background(), "test-1")
 
 	assert.Error(err)
-	assert.ErrorIs(err, inverse.ErrNotInjected)
+	assert.ErrorIs(err, inverse.ErrInverseResolverMissing)
 	assert.Nil(httpRunnable)
 }

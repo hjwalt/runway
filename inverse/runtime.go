@@ -19,7 +19,7 @@ func RegisterConfigurations[T any](configurationQualifier string, configurations
 func RegisterWithConfigurationOptional[T any, I any](qualifier string, configurationQualifier string, constructor runtime.Constructor[T, I]) {
 	Register[I](qualifier, func(ctx context.Context) (I, error) {
 		configurations, getConfigurationError := GetAll[runtime.Configuration[T]](ctx, configurationQualifier)
-		if getConfigurationError != nil && !errors.Is(getConfigurationError, ErrNotInjected) {
+		if getConfigurationError != nil && !errors.Is(getConfigurationError, ErrInverseResolverMissing) {
 			return reflect.Construct[I](), getConfigurationError
 		}
 		return constructor(configurations...), nil
