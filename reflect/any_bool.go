@@ -20,6 +20,9 @@ func GetBool(raw any) bool {
 		boolValue = input
 	case string:
 		var err error
+		if len(input) == 0 {
+			return false
+		}
 		boolValue, err = strconv.ParseBool(strings.ToUpper(input))
 		if err != nil {
 			logger.WarnErr("string parse bool failed", err)

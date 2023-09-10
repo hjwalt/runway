@@ -93,6 +93,13 @@ func TestStringUnknownToBool(t *testing.T) {
 	assert.Equal(false, reflect.GetBool(input))
 }
 
+func TestStringEmptyToBool(t *testing.T) {
+	assert := assert.New(t)
+
+	input := ""
+	assert.Equal(false, reflect.GetBool(input))
+}
+
 func TestStructToBool(t *testing.T) {
 	assert := assert.New(t)
 
