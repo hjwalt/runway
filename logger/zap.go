@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"github.com/hjwalt/runway/trusted"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -49,9 +50,7 @@ func DefaultZap(isProduction bool, logFile string, level zapcore.Level) {
 
 	// skip one level from the helper function
 	logger, err := config.Build(zap.AddCallerSkip(1))
-	if err != nil {
-		panic(err)
-	}
+	logger = trusted.Must(logger, err)
 
 	UseZap(logger)
 }

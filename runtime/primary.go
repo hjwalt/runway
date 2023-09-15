@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/hjwalt/runway/logger"
+	"github.com/hjwalt/runway/trusted"
 )
 
 var primary atomic.Pointer[Primary]
@@ -106,13 +107,10 @@ func (r *Primary) Error() {
 	err := <-r.errorChannel
 	logger.ErrorErr("runtime error received, exitting", err)
 	r.Stop()
-	if !errors.Is(err, ErrPrimaryTesting) {
-		os.Exit(1) // will fail the unit test, so have to flag out
-	}
+	trusted.Exit(err)
 }
 
 // Errors
 var (
 	ErrPrimaryInitialiseError = errors.New("primary runtime initialise function failed")
-	ErrPrimaryTesting         = errors.New("primary runtime testing error")
 )

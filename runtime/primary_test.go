@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hjwalt/runway/trusted"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -102,7 +103,7 @@ func TestPrimaryWillStopOnError(t *testing.T) {
 		loop: func(data *TestData, cancel context.CancelFunc) error {
 			data.value += 1
 			value += 1
-			return ErrPrimaryTesting
+			return trusted.ErrPrimaryTesting
 		},
 	}
 	fnRuntime := NewLoop(loop)

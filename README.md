@@ -41,7 +41,7 @@ make tidy
 make htmlcov
 ```
 
-Last coverage: 98.5%
+Last coverage (excluding trusted): 99.1%
 
 ## To Do
 
@@ -167,3 +167,8 @@ Why is it important to standardise?
 
 1. Golang is too barebone. This kind of runtime management needs to keep getting rewritten.
 2. Resource management is not a difficult problem but the cost of mistakes is high. Your program can hang, you can have connections interrupted without clean disconnect, and many more. Reducing the potential scope of failure is in general a good idea.
+
+### Trusted
+
+Trusted is a collection of stuff that is practically impossible to test.
+Keeping this collection of untestable code as small as possible is a must.
