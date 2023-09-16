@@ -60,6 +60,7 @@ Some of it includes:
 3. Logging utility functions
 4. Environment variable retrieval with sane defaults
 5. Converting bytes into a usable data structure
+6. Startup, teardown, graceful termination handling
 
 This project is a combination of those.
 
