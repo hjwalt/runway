@@ -16,9 +16,14 @@ func TestOptional(t *testing.T) {
 	assert.Equal("test", normalOptional.Get())
 	assert.Equal("test", normalOptional.GetOrDefault("default"))
 
+	pointerOptional := optional.Empty[string]()
+	assert.False(pointerOptional.IsPresent())
+	assert.Equal("", pointerOptional.Get())
+	assert.Equal("default", pointerOptional.GetOrDefault("default"))
+
 	var strptr *string
 
-	pointerOptional := optional.OfPointer(strptr)
+	pointerOptional = optional.Pointer(strptr)
 	assert.False(pointerOptional.IsPresent())
 	assert.Equal("", pointerOptional.Get())
 	assert.Equal("default", pointerOptional.GetOrDefault("default"))
@@ -31,7 +36,7 @@ func TestOptional(t *testing.T) {
 	assert.Equal("", pointerOptional.Get())
 	assert.Equal("default", pointerOptional.GetOrDefault("default"))
 
-	pointerOptional = optional.OfPointer(strptr)
+	pointerOptional = optional.Pointer(strptr)
 	assert.True(pointerOptional.IsPresent())
 	assert.Equal("newval", pointerOptional.Get())
 	assert.Equal("newval", pointerOptional.GetOrDefault("default"))

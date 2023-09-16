@@ -6,8 +6,12 @@ func Of[T any](v T) Optional[T] {
 	return optional[T]{internal: &v}
 }
 
-func OfPointer[T any](v *T) Optional[T] {
+func Pointer[T any](v *T) Optional[T] {
 	return optional[T]{internal: v}
+}
+
+func Empty[T any]() Optional[T] {
+	return optional[T]{internal: nil}
 }
 
 type Optional[T any] interface {
