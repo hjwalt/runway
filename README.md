@@ -41,7 +41,7 @@ make tidy
 make htmlcov
 ```
 
-Last coverage (excluding trusted): 99.1%
+100% coverage (excluding trusted)
 
 ## To Do
 
