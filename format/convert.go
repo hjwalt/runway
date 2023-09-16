@@ -27,6 +27,6 @@ func Convert[V1 any, V2 any](
 }
 
 var (
-	ErrFormatConversionMarshal   = errors.New("format conversion error")
-	ErrFormatConversionUnmarshal = errors.New("format conversion error")
+	ErrFormatConversionMarshal   = errors.New("format conversion marshal error")
+	ErrFormatConversionUnmarshal = errors.New("format conversion unmarshal error")
 )
