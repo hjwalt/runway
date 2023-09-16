@@ -91,19 +91,23 @@ func (mapper *Mapper) Set(target any, source any) any {
 	targetValue := reflect.ValueOf(target)
 	targetType := targetValue.Type()
 
-	if valueHandler, handlerExist := mapper.Handler[targetType.Kind()]; handlerExist {
+	res := target
+
+	valueHandler, handlerExist := mapper.Handler[targetType.Kind()]
+	if handlerExist {
 		value := valueHandler(source, targetType)
 		if targetType.Kind() == reflect.Pointer {
 			// Reflecting into pointer
 			reflect.Indirect(targetValue).Set(reflect.Indirect(value))
-			return target
+			res = target
 		} else {
-			return value.Interface()
+			res = value.Interface()
 		}
-	} else {
-		logger.Error("type missing from handler", zap.Any("type", targetType))
-		return target
 	}
+
+	logger.WarnIfTrue(!handlerExist, "type missing from handler", zap.Any("type", targetType))
+
+	return res
 }
 
 func (mapper *Mapper) GetFieldValue(inputMap map[string]interface{}, fieldName string) (interface{}, bool) {
@@ -142,11 +146,12 @@ func (mapper *Mapper) StructHandler(input interface{}, structType reflect.Type) 
 			field := structType.Field(i)
 			fieldValue := structValue.FieldByName(field.Name)
 			if value, exist := mapper.GetFieldValue(inputMap, field.Name); exist {
-				if valueHandler, handlerExist := mapper.Handler[field.Type.Kind()]; handlerExist {
+				valueHandler, handlerExist := mapper.Handler[field.Type.Kind()]
+				if handlerExist {
 					fieldValue.Set(valueHandler(value, field.Type))
-				} else {
-					logger.Infof("Unknown type %v", field.Type.Kind())
 				}
+
+				logger.WarnIfTrue(!handlerExist, "Unknown type in struct handler", zap.Any("type", field.Type))
 			}
 		}
 	}
@@ -175,11 +180,13 @@ func (mapper *Mapper) PointerHandler(input interface{}, pointerType reflect.Type
 		return reflect.Zero(pointerType)
 	}
 	pointedValue := reflect.New(pointerType.Elem())
-	if valueHandler, handlerExist := mapper.Handler[pointerType.Elem().Kind()]; handlerExist {
+	valueHandler, handlerExist := mapper.Handler[pointerType.Elem().Kind()]
+	if handlerExist {
 		reflect.Indirect(pointedValue).Set(valueHandler(input, pointerType.Elem()))
-	} else {
-		logger.Infof("Unknown type %v for pointer", pointerType.Elem().Kind())
 	}
+
+	logger.WarnIfTrue(!handlerExist, "unknown type for pointer", zap.Any("type", pointerType))
+
 	return pointedValue
 }
 
@@ -193,11 +200,12 @@ func (mapper *Mapper) SliceHandler(input interface{}, sliceType reflect.Type) re
 		inputReflectValue := reflect.ValueOf(input)
 		for i := 0; i < inputReflectValue.Len(); i++ {
 			v := inputReflectValue.Index(i).Interface()
-			if valueHandler, handlerExist := mapper.Handler[sliceType.Elem().Kind()]; handlerExist {
+			valueHandler, handlerExist := mapper.Handler[sliceType.Elem().Kind()]
+			if handlerExist {
 				sliceValue = reflect.Append(sliceValue, valueHandler(v, sliceType.Elem()))
-			} else {
-				logger.Infof("Unknown type %v for slice handler", sliceType.Elem().Kind())
 			}
+
+			logger.WarnIfTrue(!handlerExist, "unknown type for slice handler", zap.Any("type", sliceType.Elem()))
 		}
 	}
 

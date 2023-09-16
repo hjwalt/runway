@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/hjwalt/runway/logger"
-	"go.uber.org/zap"
 )
 
 // constructor
@@ -84,16 +83,16 @@ func (c *HttpRunnable) Stop() {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := c.server.Shutdown(ctx); err != nil {
-		logger.Error("Server forced to shutdown: ", zap.Error(err))
-	}
+	err := c.server.Shutdown(ctx)
+	logger.ErrorIfErr("Server forced to shutdown", err)
 }
 
 func (c *HttpRunnable) Run() error {
-	if err := c.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return err
+	err := c.server.ListenAndServe()
+	if err != nil && err == http.ErrServerClosed {
+		err = nil
 	}
-	return nil
+	return err
 }
 
 // Errors

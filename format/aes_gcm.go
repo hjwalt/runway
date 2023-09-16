@@ -3,8 +3,11 @@ package format
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"errors"
+	"io"
 
+	"github.com/hjwalt/runway/logger"
 	"github.com/hjwalt/runway/trusted"
 )
 
@@ -18,7 +21,11 @@ func (helper AesGcmFormat) Default() []byte {
 
 // Encrypt
 func (helper AesGcmFormat) Marshal(value []byte) ([]byte, error) {
-	nonce := trusted.Nonce(helper.cipher.NonceSize())
+	nonce := make([]byte, helper.cipher.NonceSize())
+
+	_, err := io.ReadFull(rand.Reader, nonce)
+	logger.ErrorIfErr("error with nonce generation", err)
+
 	outputBytes := helper.cipher.Seal(nonce, nonce, value, nil)
 	return outputBytes, nil
 }

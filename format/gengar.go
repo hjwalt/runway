@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// because gengar likes to play pranks. for unit testing broken format results
+// the pokemon gengar likes to play pranks. for unit testing broken format results
 type GengarFormat struct {
 }
 

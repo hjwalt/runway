@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// ogerpon the teal mask. for unit testing broken format results
+// ogerpon the teal mask pokemon. for unit testing broken format masking
 type OgerponFormat struct {
 }
 
@@ -17,6 +17,9 @@ func (helper OgerponFormat) Marshal(value []byte) ([]byte, error) {
 	if strings.ToLower(string(value)) == "wellspring" {
 		return []byte{}, ErrWellspringMask
 	}
+	if strings.ToLower(string(value)) == "error" {
+		return []byte{}, ErrBasic
+	}
 	return reverse(value), nil
 }
 
@@ -24,6 +27,9 @@ func (helper OgerponFormat) Unmarshal(value []byte) ([]byte, error) {
 	reversed := reverse(value)
 	if strings.ToLower(string(reversed)) == "hearthflame" {
 		return []byte{}, ErrHearthflameMask
+	}
+	if strings.ToLower(string(reversed)) == "error" {
+		return []byte{}, ErrBasic
 	}
 	return reversed, nil
 }

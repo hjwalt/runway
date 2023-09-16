@@ -94,3 +94,23 @@ func Errorf(message string, fields ...interface{}) {
 func ErrorErr(message string, err error) {
 	globalLogger.Error(message, zap.Error(err))
 }
+
+// Conditional logging
+
+func InfoIfTrue(condition bool, message string, fields ...zap.Field) {
+	if condition {
+		globalLogger.Info(message, fields...)
+	}
+}
+
+func WarnIfTrue(condition bool, message string, fields ...zap.Field) {
+	if condition {
+		globalLogger.Warn(message, fields...)
+	}
+}
+
+func ErrorIfErr(message string, err error) {
+	if err != nil {
+		globalLogger.Error(message, zap.Error(err))
+	}
+}

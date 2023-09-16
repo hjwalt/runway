@@ -21,6 +21,13 @@ func TestAllFunctions(t *testing.T) {
 
 	logger.WarnErr("test", errors.New("test error"))
 	logger.ErrorErr("test", errors.New("test error"))
+
+	logger.InfoIfTrue(true, "test", zap.String("test", "test"))
+	logger.InfoIfTrue(false, "test", zap.String("test", "test"))
+	logger.WarnIfTrue(true, "test", zap.String("test", "test"))
+	logger.WarnIfTrue(false, "test", zap.String("test", "test"))
+	logger.ErrorIfErr("test", errors.New("test error"))
+	logger.ErrorIfErr("test", nil)
 }
 
 func TestProductionSettings(t *testing.T) {
