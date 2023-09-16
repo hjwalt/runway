@@ -59,6 +59,7 @@ Some of it includes:
 2. Reflection utility functions
 3. Logging utility functions
 4. Environment variable retrieval with sane defaults
+5. Converting bytes into a usable data structure
 
 This project is a combination of those.
 
