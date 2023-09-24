@@ -7,8 +7,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBase64Default(t *testing.T) {
+func TestBase64Mask(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal("", format.Base64().Default())
+	base64MaskFormat := format.Base64String()
+
+	assert.Equal("", base64MaskFormat.Default())
+	assert.Equal([]byte{}, format.Base64().Default())
+
+	masked, err := base64MaskFormat.Marshal("test")
+	assert.NoError(err)
+	assert.Equal("dGVzdA==", string(masked))
+
+	unmasked, err := base64MaskFormat.Unmarshal(masked)
+
+	assert.NoError(err)
+	assert.Equal("test", unmasked)
 }
