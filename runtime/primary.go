@@ -79,6 +79,8 @@ func (r *Primary) Start() error {
 	go r.Error()
 
 	r.started.Store(true)
+
+	logger.Info("start up completed")
 	return nil
 }
 
@@ -86,6 +88,7 @@ func (r *Primary) Stop() {
 	defer r.started.Store(false)
 	logger.Info("shutting down")
 	r.StopFrom(len(r.runtimes) - 1)
+	logger.Info("shut down completed")
 }
 
 func (r *Primary) Wait() {
