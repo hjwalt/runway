@@ -59,6 +59,8 @@ type Primary struct {
 }
 
 func (r *Primary) Start() error {
+	logger.Info("starting up")
+
 	var startError error
 
 	for i := 0; i < len(r.runtimes); i++ {
@@ -82,6 +84,7 @@ func (r *Primary) Start() error {
 
 func (r *Primary) Stop() {
 	defer r.started.Store(false)
+	logger.Info("shutting down")
 	r.StopFrom(len(r.runtimes) - 1)
 }
 
