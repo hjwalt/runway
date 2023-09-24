@@ -12,7 +12,7 @@ import (
 func TestProtobufFormat(t *testing.T) {
 	assert := assert.New(t)
 
-	base64format := format.Base64()
+	base64format := format.Base64Mask()
 
 	f := format.Protobuf[*timestamppb.Timestamp]()
 	v := &timestamppb.Timestamp{
