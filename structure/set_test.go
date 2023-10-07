@@ -27,3 +27,17 @@ func TestSet(t *testing.T) {
 	assert.False(set.Contain("test"))
 	assert.False(set.Contain("test2"))
 }
+
+func TestSetFrom(t *testing.T) {
+
+	assert := assert.New(t)
+
+	set := structure.NewSetFrom[string](
+		[]string{
+			"a",
+			"b",
+		},
+	)
+
+	assert.True(set.Contain("a", "b"))
+}

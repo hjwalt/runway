@@ -15,6 +15,16 @@ func NewSet[T comparable]() Set[T] {
 	}
 }
 
+func NewSetFrom[T comparable](vals []T) Set[T] {
+	setMap := &mapSet[T]{
+		internal: map[T]bool{},
+	}
+	for _, v := range vals {
+		setMap.Add(v)
+	}
+	return setMap
+}
+
 type mapSet[T comparable] struct {
 	internal map[T]bool
 	sync     sync.Mutex
