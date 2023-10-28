@@ -91,6 +91,7 @@ func (c *HttpRunnable) Start() error {
 		if err != nil {
 			return errors.Join(ErrHttpFailedToInitialiseTls, err)
 		}
+		logger.Info("https enabled")
 		c.server.TLSConfig = &tls.Config{
 			Certificates: []tls.Certificate{serverTLSCert},
 		}
