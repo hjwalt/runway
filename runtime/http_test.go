@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"testing"
 	"time"
 
@@ -86,6 +87,8 @@ func TestHttpMissingHandler(t *testing.T) {
 
 func TestHttpsShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
+
+	exec.Command("/bin/sh", "./tls/generate.sh")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
