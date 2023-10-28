@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net/http"
@@ -62,9 +63,19 @@ func HttpWithWriteTimeout(timeout time.Duration) Configuration[*HttpRunnable] {
 	}
 }
 
+func HttpWithTls(certPath string, keyPath string) Configuration[*HttpRunnable] {
+	return func(c *HttpRunnable) *HttpRunnable {
+		c.tlsKeyPath = keyPath
+		c.tlsCertPath = certPath
+		return c
+	}
+}
+
 // implementation
 type HttpRunnable struct {
-	server *http.Server
+	server      *http.Server
+	tlsKeyPath  string
+	tlsCertPath string
 }
 
 func (c *HttpRunnable) Start() error {
@@ -74,6 +85,17 @@ func (c *HttpRunnable) Start() error {
 	if c.server.Handler == nil {
 		return ErrHttpMissingHandler
 	}
+
+	if len(c.tlsCertPath) > 0 && len(c.tlsKeyPath) > 0 {
+		serverTLSCert, err := tls.LoadX509KeyPair(c.tlsCertPath, c.tlsKeyPath)
+		if err != nil {
+			return errors.Join(ErrHttpFailedToInitialiseTls, err)
+		}
+		c.server.TLSConfig = &tls.Config{
+			Certificates: []tls.Certificate{serverTLSCert},
+		}
+	}
+
 	return nil
 }
 
@@ -97,6 +119,7 @@ func (c *HttpRunnable) Run() error {
 
 // Errors
 var (
-	ErrHttpMissingServer  = errors.New("http runtime no server provided")
-	ErrHttpMissingHandler = errors.New("http runtime no handler provided")
+	ErrHttpMissingServer         = errors.New("http runtime no server provided")
+	ErrHttpMissingHandler        = errors.New("http runtime no handler provided")
+	ErrHttpFailedToInitialiseTls = errors.New("http runtime failed to start tls")
 )
