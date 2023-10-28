@@ -111,7 +111,12 @@ func (c *HttpRunnable) Stop() {
 }
 
 func (c *HttpRunnable) Run() error {
-	err := c.server.ListenAndServe()
+	var err error
+	if len(c.tlsCertPath) > 0 && len(c.tlsKeyPath) > 0 {
+		err = c.server.ListenAndServeTLS(c.tlsCertPath, c.tlsKeyPath)
+	} else {
+		err = c.server.ListenAndServe()
+	}
 	if err != nil && err == http.ErrServerClosed {
 		err = nil
 	}

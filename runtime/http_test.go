@@ -1,8 +1,12 @@
 package runtime
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"io"
+	"log"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -104,7 +108,16 @@ func TestHttpsShouldSucceed(t *testing.T) {
 	var geterr error
 
 	for i := 0; i < 10; i++ {
-		resp, geterr = http.Get("http://localhost:30080")
+
+		caCert, err := os.ReadFile("./tls/root.crt")
+		if err != nil {
+			log.Fatal(err)
+		}
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM(caCert)
+
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{RootCAs: caCertPool}
+		resp, geterr = http.Get("https://localhost:30080")
 		if geterr == nil {
 			break
 		}
