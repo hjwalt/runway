@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd tls
+
 openssl req -x509 \
             -sha256 \
             -days 356 \

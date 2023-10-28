@@ -17,3 +17,10 @@
 cover.out
 cover.html
 logger/test.log
+
+# Cert files
+
+*.crt
+*.key
+*.srl
+*.csr

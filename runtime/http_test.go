@@ -85,10 +85,11 @@ func TestHttpMissingHandler(t *testing.T) {
 	httpRuntime.Stop()
 }
 
-func TestHttpsShouldSucceed(t *testing.T) {
+func TestHttps(t *testing.T) {
 	assert := assert.New(t)
 
-	exec.Command("/bin/sh", "./tls/generate.sh")
+	_, err := exec.Command("/bin/sh", "./tls/generate.sh").Output()
+	assert.NoError(err)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -135,17 +136,8 @@ func TestHttpsShouldSucceed(t *testing.T) {
 	assert.Equal("This is my website!\n", string(body))
 
 	httpRuntime.Stop()
-}
 
-func TestHttpsShouldFailToStart(t *testing.T) {
-	assert := assert.New(t)
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "This is my website!\n")
-	})
-
-	httpRuntime := NewHttp(
+	httpRuntime = NewHttp(
 		HttpWithPort(30080),
 		HttpWithHandler(mux),
 		HttpWithReadTimeout(5*time.Second),
@@ -154,7 +146,7 @@ func TestHttpsShouldFailToStart(t *testing.T) {
 		HttpWithTls("./tls/server.crt", "./tls/wrong.key"),
 	)
 
-	startErr := httpRuntime.Start()
+	startErr = httpRuntime.Start()
 	assert.ErrorIs(startErr, ErrHttpFailedToInitialiseTls)
 	httpRuntime.Stop()
 }
