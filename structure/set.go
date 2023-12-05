@@ -7,6 +7,7 @@ type Set[T comparable] interface {
 	Contain(...T) bool
 	Remove(...T)
 	Clear()
+	Get() []T
 }
 
 func NewSet[T comparable]() Set[T] {
@@ -61,4 +62,16 @@ func (s *mapSet[T]) Clear() {
 	s.sync.Lock()
 	defer s.sync.Unlock()
 	s.internal = map[T]bool{}
+}
+
+func (s *mapSet[T]) Get() []T {
+	s.sync.Lock()
+	defer s.sync.Unlock()
+	result := make([]T, len(s.internal))
+	i := 0
+	for t := range s.internal {
+		result[i] = t
+		i += 1
+	}
+	return result
 }

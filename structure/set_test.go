@@ -18,10 +18,14 @@ func TestSet(t *testing.T) {
 	assert.True(set.Contain("test"))
 	assert.True(set.Contain("test1", "test2"))
 
+	assert.ElementsMatch(set.Get(), []string{"test", "test1", "test2"})
+
 	set.Remove("test1")
 	set.Remove("unknown")
 	assert.True(set.Contain("test", "test2"))
 	assert.False(set.Contain("test1"))
+
+	assert.ElementsMatch(set.Get(), []string{"test", "test2"})
 
 	set.Clear()
 	assert.False(set.Contain("test"))

@@ -9,8 +9,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// TODO: think about how to cover logger for unknown handlers
-
 type TargetTest struct {
 	Str        string
 	StrPtr     *string
