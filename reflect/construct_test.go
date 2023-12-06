@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hjwalt/runway/reflect"
+	"github.com/hjwalt/runway/structure"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,4 +33,7 @@ func TestConstruct(t *testing.T) {
 
 	funcType := reflect.Construct[FuncForTest]()
 	assert.Nil(funcType)
+
+	voidType := reflect.Construct[structure.Void]()
+	assert.Nil(voidType)
 }

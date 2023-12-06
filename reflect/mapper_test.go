@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hjwalt/runway/reflect"
+	"github.com/hjwalt/runway/structure"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -243,4 +244,21 @@ func TestMapperMappingCustomFieldSearch(t *testing.T) {
 	target = mapper.Set(target, source).(TargetTest)
 
 	assert.Equal("str", target.Str)
+}
+
+func TestMapperMappingVoid(t *testing.T) {
+	assert := assert.New(t)
+
+	mapper := reflect.NewMapper()
+
+	source := map[string]interface{}{
+		"str": "str",
+	}
+
+	var target structure.Void
+
+	newval := mapper.Set(target, source)
+
+	assert.Nil(newval)
+	assert.Nil(target)
 }
