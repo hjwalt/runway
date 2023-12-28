@@ -1,6 +1,7 @@
 package format_test
 
 import (
+	"crypto/rand"
 	"testing"
 
 	"github.com/hjwalt/runway/format"
@@ -10,7 +11,7 @@ import (
 func TestAesGcm(t *testing.T) {
 	assert := assert.New(t)
 
-	aesFormat, err := format.AesGcm("asdfasdfasdfasdfasdfasdfasdfasdf")
+	aesFormat, err := format.AesGcmMask("asdfasdfasdfasdfasdfasdfasdfasdf")
 
 	assert.NoError(err)
 
@@ -54,4 +55,28 @@ func TestAesGcmAesDecryptDataTooShort(t *testing.T) {
 
 	_, decryptionErr := aesFormat.Unmarshal([]byte("a"))
 	assert.ErrorIs(decryptionErr, format.ErrAesGcmDecryptTooShort)
+}
+
+func TestAesGcmRandomBytes(t *testing.T) {
+	assert := assert.New(t)
+
+	key := make([]byte, 32)
+
+	_, randErr := rand.Read(key)
+	assert.NoError(randErr)
+
+	aesFormat, err := format.AesGcmMaskByteKey(key)
+
+	assert.NoError(err)
+
+	strBytes := []byte("test")
+	encryptedBytes, encryptionErr := aesFormat.Marshal(strBytes)
+
+	assert.NoError(encryptionErr)
+	assert.NotEqual(strBytes, encryptedBytes)
+
+	decryptedBytes, decryptionErr := aesFormat.Unmarshal(encryptedBytes)
+
+	assert.NoError(decryptionErr)
+	assert.Equal(strBytes, decryptedBytes)
 }

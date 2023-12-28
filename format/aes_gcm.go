@@ -59,6 +59,22 @@ func AesGcm(key string) (Format[[]byte], error) {
 	return AesGcmFormat{cipher: gcmpad}, nil
 }
 
+func AesGcmMask(key string) (Format[[]byte], error) {
+	return AesGcm(key)
+}
+
+func AesGcmMaskByteKey(key []byte) (Format[[]byte], error) {
+	aescipher, err := aes.NewCipher(key)
+	if err != nil {
+		return Bytes(), errors.Join(ErrAesCreate, err)
+	}
+
+	gcmpad, err := cipher.NewGCM(aescipher)
+	gcmpad = trusted.Must(gcmpad, err)
+
+	return AesGcmFormat{cipher: gcmpad}, nil
+}
+
 var (
 	ErrAesCreate             = errors.New("AES cipher creation error")
 	ErrGcmCreate             = errors.New("GCM cipher mode creation error")
