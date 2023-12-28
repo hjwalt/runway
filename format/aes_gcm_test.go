@@ -80,3 +80,15 @@ func TestAesGcmRandomBytes(t *testing.T) {
 	assert.NoError(decryptionErr)
 	assert.Equal(strBytes, decryptedBytes)
 }
+
+func TestAesGcmRandomBytesMaskFailure(t *testing.T) {
+	assert := assert.New(t)
+
+	key := make([]byte, 64)
+
+	_, randErr := rand.Read(key)
+	assert.NoError(randErr)
+
+	_, err := format.AesGcmMaskByteKey(key)
+	assert.ErrorIs(err, format.ErrAesCreate)
+}
