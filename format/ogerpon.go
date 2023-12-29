@@ -9,11 +9,7 @@ import (
 type OgerponFormat struct {
 }
 
-func (helper OgerponFormat) Default() []byte {
-	return []byte{}
-}
-
-func (helper OgerponFormat) Marshal(value []byte) ([]byte, error) {
+func (helper OgerponFormat) Mask(value []byte) ([]byte, error) {
 	if strings.ToLower(string(value)) == "wellspring" {
 		return []byte{}, ErrWellspringMask
 	}
@@ -23,7 +19,7 @@ func (helper OgerponFormat) Marshal(value []byte) ([]byte, error) {
 	return reverse(value), nil
 }
 
-func (helper OgerponFormat) Unmarshal(value []byte) ([]byte, error) {
+func (helper OgerponFormat) Unmask(value []byte) ([]byte, error) {
 	reversed := reverse(value)
 	if strings.ToLower(string(reversed)) == "hearthflame" {
 		return []byte{}, ErrHearthflameMask
@@ -34,7 +30,7 @@ func (helper OgerponFormat) Unmarshal(value []byte) ([]byte, error) {
 	return reversed, nil
 }
 
-func Ogerpon() Format[[]byte] {
+func Ogerpon() Mask {
 	return OgerponFormat{}
 }
 

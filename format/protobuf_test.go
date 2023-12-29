@@ -21,7 +21,7 @@ func TestProtobufFormat(t *testing.T) {
 	}
 	b64 := []byte("CNKF2MwEEJWa7zo=")
 
-	b, e64 := base64format.Unmarshal(b64)
+	b, e64 := base64format.Unmask(b64)
 	assert.NoError(e64)
 
 	vb, em := f.Marshal(v)
@@ -30,7 +30,7 @@ func TestProtobufFormat(t *testing.T) {
 	bv, eu := f.Unmarshal(b)
 	assert.NoError(eu)
 
-	vb64, e64 := base64format.Marshal(vb)
+	vb64, e64 := base64format.Mask(vb)
 	assert.NoError(e64)
 
 	assert.Equal(b64, vb64)

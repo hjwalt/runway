@@ -57,8 +57,8 @@ func TestMaskedEncryptionUnmarshalErr(t *testing.T) {
 
 	masked := format.Masked(mask, actual)
 
-	errInducingInput1, _ := mask.Marshal([]byte("gengar"))
-	errInducingInput2, _ := mask.Marshal([]byte("hearthflame"))
+	errInducingInput1, _ := mask.Mask([]byte("gengar"))
+	errInducingInput2, _ := mask.Mask([]byte("hearthflame"))
 
 	_, marshalErr := masked.Unmarshal(errInducingInput1)
 

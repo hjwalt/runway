@@ -15,12 +15,8 @@ type AesGcmFormat struct {
 	cipher cipher.AEAD
 }
 
-func (helper AesGcmFormat) Default() []byte {
-	return []byte{}
-}
-
 // Encrypt
-func (helper AesGcmFormat) Marshal(value []byte) ([]byte, error) {
+func (helper AesGcmFormat) Mask(value []byte) ([]byte, error) {
 	nonce := make([]byte, helper.cipher.NonceSize())
 
 	_, err := io.ReadFull(rand.Reader, nonce)
@@ -31,26 +27,26 @@ func (helper AesGcmFormat) Marshal(value []byte) ([]byte, error) {
 }
 
 // Decrypt
-func (helper AesGcmFormat) Unmarshal(value []byte) ([]byte, error) {
+func (helper AesGcmFormat) Unmask(value []byte) ([]byte, error) {
 
 	nonceSize := helper.cipher.NonceSize()
 	if len(value) < nonceSize {
-		return helper.Default(), ErrAesGcmDecryptTooShort
+		return []byte{}, ErrAesGcmDecryptTooShort
 	}
 
 	nonce, ciphertext := value[:nonceSize], value[nonceSize:]
 	plainBytes, err := helper.cipher.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return helper.Default(), errors.Join(ErrAesGcmDecrypt, err)
+		return []byte{}, errors.Join(ErrAesGcmDecrypt, err)
 	}
 
 	return plainBytes, nil
 }
 
-func AesGcm(key string) (Format[[]byte], error) {
+func AesGcm(key string) (Mask, error) {
 	aescipher, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		return Bytes(), errors.Join(ErrAesCreate, err)
+		return Plain(), errors.Join(ErrAesCreate, err)
 	}
 
 	gcmpad, err := cipher.NewGCM(aescipher)
@@ -59,14 +55,10 @@ func AesGcm(key string) (Format[[]byte], error) {
 	return AesGcmFormat{cipher: gcmpad}, nil
 }
 
-func AesGcmMask(key string) (Format[[]byte], error) {
-	return AesGcm(key)
-}
-
-func AesGcmMaskByteKey(key []byte) (Format[[]byte], error) {
+func AesGcmByteKey(key []byte) (Mask, error) {
 	aescipher, err := aes.NewCipher(key)
 	if err != nil {
-		return Bytes(), errors.Join(ErrAesCreate, err)
+		return Plain(), errors.Join(ErrAesCreate, err)
 	}
 
 	gcmpad, err := cipher.NewGCM(aescipher)

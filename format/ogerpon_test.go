@@ -14,15 +14,14 @@ func TestOgerpon(t *testing.T) {
 
 	v := []byte("test")
 
-	vb, em := f.Marshal(v)
+	vb, em := f.Mask(v)
 	assert.NoError(em)
 	assert.Equal("tset", string(vb))
 
-	bv, eu := f.Unmarshal(vb)
+	bv, eu := f.Unmask(vb)
 	assert.NoError(eu)
 
 	assert.Equal(v, bv)
-	assert.Equal([]byte{}, f.Default())
 }
 
 func TestOgerponError(t *testing.T) {
@@ -32,13 +31,13 @@ func TestOgerponError(t *testing.T) {
 
 	var err error
 
-	_, err = f.Marshal([]byte("wellspring"))
+	_, err = f.Mask([]byte("wellspring"))
 	assert.ErrorIs(err, format.ErrWellspringMask)
-	_, err = f.Marshal([]byte("error"))
+	_, err = f.Mask([]byte("error"))
 	assert.ErrorIs(err, format.ErrBasic)
 
-	_, err = f.Unmarshal([]byte("emalfhtraeh"))
+	_, err = f.Unmask([]byte("emalfhtraeh"))
 	assert.ErrorIs(err, format.ErrHearthflameMask)
-	_, err = f.Unmarshal([]byte("rorre"))
+	_, err = f.Unmask([]byte("rorre"))
 	assert.ErrorIs(err, format.ErrBasic)
 }

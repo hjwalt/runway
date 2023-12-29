@@ -33,7 +33,6 @@ func TestBase64Mask(t *testing.T) {
 	)
 
 	assert.Equal("", base64MaskFormat.Default())
-	assert.Equal([]byte{}, format.Base64Mask().Default())
 
 	masked, err := base64MaskFormat.Marshal("test")
 	assert.NoError(err)

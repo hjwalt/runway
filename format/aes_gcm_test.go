@@ -11,17 +11,17 @@ import (
 func TestAesGcm(t *testing.T) {
 	assert := assert.New(t)
 
-	aesFormat, err := format.AesGcmMask("asdfasdfasdfasdfasdfasdfasdfasdf")
+	aesFormat, err := format.AesGcm("asdfasdfasdfasdfasdfasdfasdfasdf")
 
 	assert.NoError(err)
 
 	strBytes := []byte("test")
-	encryptedBytes, encryptionErr := aesFormat.Marshal(strBytes)
+	encryptedBytes, encryptionErr := aesFormat.Mask(strBytes)
 
 	assert.NoError(encryptionErr)
 	assert.NotEqual(strBytes, encryptedBytes)
 
-	decryptedBytes, decryptionErr := aesFormat.Unmarshal(encryptedBytes)
+	decryptedBytes, decryptionErr := aesFormat.Unmask(encryptedBytes)
 
 	assert.NoError(decryptionErr)
 	assert.Equal(strBytes, decryptedBytes)
@@ -42,7 +42,7 @@ func TestAesGcmAesDecryptError(t *testing.T) {
 
 	assert.NoError(err)
 
-	_, decryptionErr := aesFormat.Unmarshal([]byte("asdfasdfasdfasdfasdfasdfasdf"))
+	_, decryptionErr := aesFormat.Unmask([]byte("asdfasdfasdfasdfasdfasdfasdf"))
 	assert.ErrorIs(decryptionErr, format.ErrAesGcmDecrypt)
 }
 
@@ -53,7 +53,7 @@ func TestAesGcmAesDecryptDataTooShort(t *testing.T) {
 
 	assert.NoError(err)
 
-	_, decryptionErr := aesFormat.Unmarshal([]byte("a"))
+	_, decryptionErr := aesFormat.Unmask([]byte("a"))
 	assert.ErrorIs(decryptionErr, format.ErrAesGcmDecryptTooShort)
 }
 
@@ -65,17 +65,17 @@ func TestAesGcmRandomBytes(t *testing.T) {
 	_, randErr := rand.Read(key)
 	assert.NoError(randErr)
 
-	aesFormat, err := format.AesGcmMaskByteKey(key)
+	aesFormat, err := format.AesGcmByteKey(key)
 
 	assert.NoError(err)
 
 	strBytes := []byte("test")
-	encryptedBytes, encryptionErr := aesFormat.Marshal(strBytes)
+	encryptedBytes, encryptionErr := aesFormat.Mask(strBytes)
 
 	assert.NoError(encryptionErr)
 	assert.NotEqual(strBytes, encryptedBytes)
 
-	decryptedBytes, decryptionErr := aesFormat.Unmarshal(encryptedBytes)
+	decryptedBytes, decryptionErr := aesFormat.Unmask(encryptedBytes)
 
 	assert.NoError(decryptionErr)
 	assert.Equal(strBytes, decryptedBytes)
@@ -89,6 +89,6 @@ func TestAesGcmRandomBytesMaskFailure(t *testing.T) {
 	_, randErr := rand.Read(key)
 	assert.NoError(randErr)
 
-	_, err := format.AesGcmMaskByteKey(key)
+	_, err := format.AesGcmByteKey(key)
 	assert.ErrorIs(err, format.ErrAesCreate)
 }

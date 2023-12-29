@@ -5,7 +5,7 @@ import (
 )
 
 type MaskedFormat[T any] struct {
-	mask   Format[[]byte]
+	mask   Mask
 	actual Format[T]
 }
 
@@ -19,7 +19,7 @@ func (helper MaskedFormat[T]) Marshal(value T) ([]byte, error) {
 		return []byte{}, errors.Join(ErrMaskActualMarshal, marshalErr)
 	}
 
-	maskedBytes, maskingErr := helper.mask.Marshal(byteToMask)
+	maskedBytes, maskingErr := helper.mask.Mask(byteToMask)
 	if maskingErr != nil {
 		return []byte{}, errors.Join(ErrMaskMarshal, maskingErr)
 	}
@@ -28,7 +28,7 @@ func (helper MaskedFormat[T]) Marshal(value T) ([]byte, error) {
 }
 
 func (helper MaskedFormat[T]) Unmarshal(value []byte) (T, error) {
-	bytesToUnmarshal, unmaskingErr := helper.mask.Unmarshal(value)
+	bytesToUnmarshal, unmaskingErr := helper.mask.Unmask(value)
 	if unmaskingErr != nil {
 		return helper.Default(), errors.Join(ErrMaskUnmarshal, unmaskingErr)
 	}
@@ -41,7 +41,7 @@ func (helper MaskedFormat[T]) Unmarshal(value []byte) (T, error) {
 	return valueToReturn, nil
 }
 
-func Masked[T any](mask Format[[]byte], actual Format[T]) Format[T] {
+func Masked[T any](mask Mask, actual Format[T]) Format[T] {
 	return MaskedFormat[T]{mask: mask, actual: actual}
 }
 

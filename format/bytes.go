@@ -15,6 +15,18 @@ func (helper BytesFormat) Unmarshal(value []byte) ([]byte, error) {
 	return value, nil
 }
 
+func (helper BytesFormat) Mask(value []byte) ([]byte, error) {
+	return value, nil
+}
+
+func (helper BytesFormat) Unmask(value []byte) ([]byte, error) {
+	return value, nil
+}
+
 func Bytes() Format[[]byte] {
+	return BytesFormat{}
+}
+
+func Plain() Mask {
 	return BytesFormat{}
 }
