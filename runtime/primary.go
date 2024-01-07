@@ -50,7 +50,6 @@ func Error(err error) {
 
 // implementation
 type Primary struct {
-	// wait             sync.WaitGroup
 	started          atomic.Bool
 	runtimes         []Runtime
 	interruptChannel chan os.Signal
