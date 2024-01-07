@@ -1,3 +1,8 @@
+# Runway
+
+[![Go](https://github.com/hjwalt/runway/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/hjwalt/runway/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hjwalt/runway)](https://goreportcard.com/report/github.com/hjwalt/runway)
+
 Runway to make a solid and simple golang software.
 
 ## Using
