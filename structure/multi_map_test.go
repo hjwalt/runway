@@ -43,7 +43,7 @@ func TestMultiMap(t *testing.T) {
 	mm.Add("test2", "3", "4", "5")
 
 	assert.Equal(map[string][]string{
-		"test1": []string{"1", "2", "3"},
-		"test2": []string{"3", "4", "5"},
+		"test1": {"1", "2", "3"},
+		"test2": {"3", "4", "5"},
 	}, mm.GetAll())
 }
