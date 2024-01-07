@@ -1,12 +1,14 @@
 package runtime
 
 import (
+	"context"
 	"errors"
 	"sync/atomic"
 	"time"
 
 	retry "github.com/avast/retry-go/v4"
 	"github.com/hjwalt/runway/logger"
+	"github.com/hjwalt/runway/reflect"
 )
 
 // constructor
@@ -94,6 +96,8 @@ func (c *Retry) Do(fnToDo func(int64) error) error {
 	return err
 }
 
+// utils
+
 var ErrRetryStopped = errors.New("retry stopped")
 
 func AlwaysTry(err error) bool {
@@ -101,4 +105,12 @@ func AlwaysTry(err error) bool {
 		return false
 	}
 	return true
+}
+
+func SetRetryCount(ctx context.Context, trycount int64) context.Context {
+	return context.WithValue(ctx, Context("RetryCount"), trycount)
+}
+
+func GetRetryCount(ctx context.Context) int64 {
+	return reflect.GetInt64(ctx.Value(Context("RetryCount")))
 }

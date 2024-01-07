@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -98,4 +99,16 @@ func TestRetryAbsorb(t *testing.T) {
 	assert.Equal(iteration, 100)
 	assert.Equal(lastiteration, int64(100))
 	assert.NoError(err)
+}
+
+func TestRetryContext(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx := context.Background()
+	zeroCount := GetRetryCount(ctx)
+	assert.Equal(int64(0), zeroCount)
+
+	withTryCount := SetRetryCount(ctx, 100)
+	retrieved := GetRetryCount(withTryCount)
+	assert.Equal(int64(100), retrieved)
 }
