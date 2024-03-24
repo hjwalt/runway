@@ -53,6 +53,18 @@ func TestContainerGenericResolveLast(t *testing.T) {
 				a.Equal("test-1", val)
 			},
 		},
+		{
+			name:  "get last val",
+			reset: true,
+			resolverAdder: func(c inverse.Container) {
+				inverse.GenericAddVal(c, "test-1", "test-2")
+			},
+			test: func(c inverse.Container, t *testing.T, a *assert.Assertions) {
+				val, err := inverse.GenericGetLast[string](c, context.Background(), "test-1")
+				a.NoError(err)
+				a.Equal("test-2", val)
+			},
+		},
 	}
 
 	c := inverse.NewContainer()

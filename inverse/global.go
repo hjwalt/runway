@@ -4,8 +4,6 @@ import (
 	"context"
 )
 
-type Injector[T any] func(context.Context, Container) (T, error)
-
 var Global = NewContainer()
 
 func Reset() {

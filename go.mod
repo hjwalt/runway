@@ -5,8 +5,8 @@ go 1.20
 require (
 	github.com/avast/retry-go/v4 v4.5.1
 	github.com/stretchr/testify v1.8.4
-	go.uber.org/zap v1.26.0
-	google.golang.org/protobuf v1.32.0
+	go.uber.org/zap v1.27.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

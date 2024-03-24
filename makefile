@@ -1,6 +1,6 @@
 MODULE=github.com/hjwalt/runway
 test:
-	go test ./... -cover -coverprofile cover.out 
+	GOEXPERIMENT=nocoverageredesign go test ./... -cover -coverprofile cover.out
 	
 testv:
 	go test ./... -cover -coverprofile cover.out -v 

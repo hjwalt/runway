@@ -5,6 +5,7 @@ import (
 
 	"github.com/hjwalt/runway/reflect"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestTypeof(t *testing.T) {
@@ -34,6 +35,10 @@ func TestTypeof(t *testing.T) {
 	var personPointer *Person
 	personPointerType := reflect.TypeName(personPointer)
 	assert.Equal("*reflect_test.Person", personPointerType)
+
+	// Test with pointer reflect construct
+	reflectType := reflect.TypeName(reflect.Construct[*timestamppb.Timestamp]())
+	assert.Equal("*timestamppb.Timestamp", reflectType)
 
 	// Test with a slice
 	sliceType := reflect.TypeName([]int{})
