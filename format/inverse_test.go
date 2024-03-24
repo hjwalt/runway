@@ -17,9 +17,8 @@ func TestStoreFormat(t *testing.T) {
 	f := format.Protobuf[*timestamppb.Timestamp]()
 
 	format.RegisterFormat(c, f)
+	val, err := format.RetrieveFormat[*timestamppb.Timestamp](c, context.Background())
 
-	expectedKey := "format-*timestamppb.Timestamp"
-	val, err := c.Get(context.Background(), expectedKey)
 	assert.NoError(err)
 	assert.Equal(f, val)
 }
@@ -31,9 +30,8 @@ func TestStoreMask(t *testing.T) {
 	m := format.Base64Mask()
 
 	format.RegisterMask(c, "base64", m)
+	val, err := format.RetrieveMask(c, "base64", context.Background())
 
-	expectedKey := "format-base64"
-	val, err := c.Get(context.Background(), expectedKey)
 	assert.NoError(err)
 	assert.Equal(m, val)
 }
