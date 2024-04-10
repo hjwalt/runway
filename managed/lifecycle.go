@@ -117,7 +117,8 @@ func (c *lifecycle) Running() bool {
 	return c.running.Load()
 }
 
-func (c *lifecycle) Error(error) {
+func (c *lifecycle) Error(err error) {
+	logger.ErrorErr("lifecycle error", err)
 	go c.Stop()
 }
 
