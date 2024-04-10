@@ -17,8 +17,16 @@ const (
 	ConfHttpTlsCertPath             = "ConfHttpTlsCertPath"
 )
 
-func NewHttp() Service {
-	return &httpRunnable{}
+func AddHttp(ic inverse.Container) {
+	AddService(ic, &httpRunnable{})
+}
+
+func AddHttpConfig(ic inverse.Container, conf map[string]string) {
+	AddConfiguration(ic, "http", conf)
+}
+
+func AddHttpHandler(ic inverse.Container, ij inverse.Injector[http.Handler]) {
+	inverse.GenericAdd(ic, QualifierHttpHandler, ij)
 }
 
 // implementation
@@ -38,12 +46,12 @@ func (r *httpRunnable) Register(ctx context.Context, ic inverse.Container) error
 }
 
 func (r *httpRunnable) Resolve(ctx context.Context, ic inverse.Container) error {
-	config, configErr := ResolveConfig(ctx, ic, r.Name())
+	config, configErr := GetConfig(ic, ctx, r.Name())
 	if configErr != nil {
 		return configErr
 	}
 
-	lifecycle, lifecycleErr := ResolveLifecycle(ctx, ic)
+	lifecycle, lifecycleErr := GetLifecycle(ic, ctx)
 	if lifecycleErr != nil {
 		return lifecycleErr
 	}

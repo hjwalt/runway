@@ -17,11 +17,15 @@ const (
 	ConfRetryAbsorbError          = "ConfRetryAbsorbError"
 )
 
-func NewRetry() Retry {
-	return NewQualifiedRetry(QualifierRetry)
+func AddRetry(ic inverse.Container) {
+	AddQualifiedRetry(ic, QualifierRetry)
 }
 
-func NewQualifiedRetry(qualifier string) Retry {
+func AddQualifiedRetry(ic inverse.Container, qualifier string) {
+	AddComponent(ic, createRetry(qualifier))
+}
+
+func createRetry(qualifier string) Retry {
 	return &retry{
 		qualifier: qualifier,
 		options:   []retrylib.Option{},
@@ -29,7 +33,11 @@ func NewQualifiedRetry(qualifier string) Retry {
 	}
 }
 
-func ResolveRetry(ctx context.Context, container inverse.Container, qualifier string) (Retry, error) {
+func GetRetry(container inverse.Container, ctx context.Context) (Retry, error) {
+	return GetQualifiedRetry(container, ctx, QualifierRetry)
+}
+
+func GetQualifiedRetry(container inverse.Container, ctx context.Context, qualifier string) (Retry, error) {
 	return inverse.GenericGet[Retry](container, ctx, qualifier)
 }
 
@@ -51,7 +59,7 @@ func (r *retry) Register(ctx context.Context, ic inverse.Container) error {
 }
 
 func (r *retry) Resolve(ctx context.Context, ic inverse.Container) error {
-	config, configErr := ResolveConfig(ctx, ic, r.Name())
+	config, configErr := GetConfig(ic, ctx, r.Name())
 	if configErr != nil {
 		return configErr
 	}
@@ -66,7 +74,7 @@ func (r *retry) Resolve(ctx context.Context, ic inverse.Container) error {
 	}
 	r.absorb = config.GetBool(ConfRetryAbsorbError, false)
 
-	lifecycle, lifecycleErr := ResolveLifecycle(ctx, ic)
+	lifecycle, lifecycleErr := GetLifecycle(ic, ctx)
 	if lifecycleErr != nil {
 		return lifecycleErr
 	}

@@ -10,7 +10,7 @@ import (
 	"github.com/hjwalt/runway/logger"
 )
 
-func ResolveLifecycle(ctx context.Context, container inverse.Container) (Lifecycle, error) {
+func GetLifecycle(container inverse.Container, ctx context.Context) (Lifecycle, error) {
 	return inverse.GenericGet[Lifecycle](container, ctx, QualifierLifecycle)
 }
 

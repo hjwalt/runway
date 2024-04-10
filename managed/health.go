@@ -8,11 +8,11 @@ import (
 	"github.com/hjwalt/runway/inverse"
 )
 
-func NewHealth() Health {
-	return &health{}
+func AddHealth(ic inverse.Container) {
+	AddComponent(ic, &health{})
 }
 
-func ResolveHealth(ctx context.Context, container inverse.Container) (Health, error) {
+func GetHealth(container inverse.Container, ctx context.Context) (Health, error) {
 	return inverse.GenericGet[Health](container, ctx, QualifierHealth)
 }
 

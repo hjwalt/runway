@@ -28,7 +28,7 @@ func NewConfig(component string, configuration map[string]string) Configuration 
 	}
 }
 
-func ResolveConfig(ctx context.Context, container inverse.Container, component string) (Configuration, error) {
+func GetConfig(container inverse.Container, ctx context.Context, component string) (Configuration, error) {
 	return inverse.GenericGet[Configuration](container, ctx, configKey(component))
 }
 

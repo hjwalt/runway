@@ -29,7 +29,7 @@ func (r *runner) Register(ctx context.Context, ic inverse.Container) error {
 }
 
 func (r *runner) Resolve(ctx context.Context, ic inverse.Container) error {
-	lifecycle, lifecycleErr := ResolveLifecycle(ctx, ic)
+	lifecycle, lifecycleErr := GetLifecycle(ic, ctx)
 	if lifecycleErr != nil {
 		return lifecycleErr
 	}
