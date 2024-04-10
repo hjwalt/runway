@@ -58,7 +58,10 @@ func DefaultZap(isProduction bool, logFile string, level zapcore.Level) {
 	logger, err := config.Build(zap.AddCallerSkip(1))
 	logger = trusted.Must(logger, err)
 
-	slog.SetDefault(slog.New(&ZapHandler{config: config, logger: logger}))
+	slogger, err := config.Build(zap.AddCallerSkip(3))
+	logger = trusted.Must(logger, err)
+
+	slog.SetDefault(slog.New(&ZapHandler{config: config, logger: slogger}))
 
 	UseZap(logger)
 }

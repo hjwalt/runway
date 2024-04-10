@@ -31,9 +31,13 @@ func TestAllFunctions(t *testing.T) {
 	logger.ErrorIfErr("test", nil)
 
 	slog.Info("test", "key", "value")
+	slog.Warn("test", "key", "value")
 
-	localLogger := slog.With("attr", "attr-val")
+	localLogger := slog.With("attr", "attr-val").WithGroup("test").With("groupattr", "group-val")
 	localLogger.Info("test", "key", "value")
+	localLogger.Warn("test", "key", "value")
+
+	// assert.Fail(t, "test")
 }
 
 func TestProductionSettings(t *testing.T) {

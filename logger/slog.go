@@ -8,6 +8,13 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+var levelMap = map[slog.Level]zapcore.Level{
+	slog.LevelDebug: zapcore.DebugLevel,
+	slog.LevelInfo:  zapcore.InfoLevel,
+	slog.LevelWarn:  zapcore.WarnLevel,
+	slog.LevelError: zapcore.ErrorLevel,
+}
+
 type ZapHandler struct {
 	config zap.Config
 	logger *zap.Logger
@@ -17,7 +24,7 @@ type ZapHandler struct {
 }
 
 func (h *ZapHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return int(level) >= int(h.config.Level.Level())
+	return levelMap[level] >= h.config.Level.Level()
 }
 
 func (h *ZapHandler) Handle(ctx context.Context, record slog.Record) error {
@@ -32,7 +39,7 @@ func (h *ZapHandler) Handle(ctx context.Context, record slog.Record) error {
 		return true
 	})
 
-	if ce := h.logger.Check(zapcore.Level(record.Level), record.Message); ce != nil {
+	if ce := h.logger.Check(levelMap[record.Level], record.Message); ce != nil {
 		ce.Write(fields...)
 	}
 
