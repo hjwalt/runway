@@ -6,6 +6,7 @@ import (
 	"sync/atomic"
 
 	"github.com/hjwalt/runway/inverse"
+	"github.com/hjwalt/runway/logger"
 )
 
 func ResolveLifecycle(ctx context.Context, container inverse.Container) (Lifecycle, error) {
@@ -84,6 +85,7 @@ func (r *lifecycle) Clean() error {
 
 func (r *lifecycle) Start() error {
 	for i := 0; i < len(r.services); i++ {
+		logger.Info("starting " + r.services[i].Name())
 		if err := r.services[i].Start(); err != nil {
 			errReturn := errors.Join(ErrLifecycleStartError, err)
 			if stopErr := r.Stop(); stopErr != nil {
@@ -101,6 +103,7 @@ func (r *lifecycle) Stop() error {
 
 	stopErrors := []error{}
 	for i := len(r.services); i > 0; i-- {
+		logger.Info("stopping " + r.services[i-1].Name())
 		if err := r.services[i-1].Stop(); err != nil {
 			stopErrors = append(stopErrors, err)
 		}
