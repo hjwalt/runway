@@ -13,7 +13,7 @@ var globalLogger *zap.Logger
 var globalSugar *zap.SugaredLogger
 
 func init() {
-	DefaultZap(false, "", zap.DebugLevel)
+	Default()
 }
 
 func Default() {
