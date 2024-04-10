@@ -9,7 +9,7 @@ import (
 const (
 	QualifierLifecycle   = "lifecycle"
 	QualifierRetry       = "retry"
-	QualifierHttpHandler = "http-handler"
+	QualifierHttpHandler = "http_handler"
 	QualifierHealth      = "health"
 )
 
