@@ -17,14 +17,14 @@ const (
 	ConfHttpTlsCertPath             = "ConfHttpTlsCertPath"
 )
 
-func NewHttp() []Service {
-	httpService := &httpRunnable{}
-	return []Service{httpService, NewRunner(httpService)}
+func NewHttp() Service {
+	return &httpRunnable{}
 }
 
 // implementation
 type httpRunnable struct {
 	server      *http.Server
+	lifecycle   Lifecycle
 	tlsKeyPath  string
 	tlsCertPath string
 }
@@ -42,6 +42,12 @@ func (r *httpRunnable) Resolve(ctx context.Context, ic inverse.Container) error 
 	if configErr != nil {
 		return configErr
 	}
+
+	lifecycle, lifecycleErr := ResolveLifecycle(ctx, ic)
+	if lifecycleErr != nil {
+		return lifecycleErr
+	}
+	r.lifecycle = lifecycle
 
 	port := config.GetString(ConfHttpPort, "8080")
 
@@ -72,9 +78,12 @@ func (r *httpRunnable) Start() error {
 	if r.server == nil {
 		return ErrHttpMissingServer
 	}
+
 	if r.server.Handler == nil {
 		return ErrHttpMissingHandler
 	}
+
+	go r.Run()
 
 	return nil
 }
@@ -88,7 +97,7 @@ func (r *httpRunnable) Stop() error {
 	return r.server.Shutdown(ctx)
 }
 
-func (c *httpRunnable) Run() error {
+func (c *httpRunnable) Run() {
 	var err error
 
 	if len(c.tlsCertPath) > 0 && len(c.tlsKeyPath) > 0 {
@@ -99,7 +108,9 @@ func (c *httpRunnable) Run() error {
 	if err != nil && err == http.ErrServerClosed {
 		err = nil
 	}
-	return err
+	if err != nil {
+		c.lifecycle.Error(err)
+	}
 }
 
 // Errors
