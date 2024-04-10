@@ -17,11 +17,15 @@ const (
 )
 
 func New(
+	ctx context.Context,
+	ic inverse.Container,
 	services []Service,
 	components []Component,
 	configurations []Configuration,
 ) runtime.Runtime {
 	return &manager{
+		ctx: ctx,
+		ic:  ic,
 		lifecycle: &lifecycle{
 			running:        &atomic.Bool{},
 			services:       services,
@@ -33,17 +37,16 @@ func New(
 
 // implementation
 type manager struct {
+	ctx       context.Context
+	ic        inverse.Container
 	lifecycle Lifecycle
 }
 
 func (r *manager) Start() error {
-	ctx := context.Background()
-	ic := inverse.NewContainer()
-
-	if err := r.lifecycle.Register(ctx, ic); err != nil {
+	if err := r.lifecycle.Register(r.ctx, r.ic); err != nil {
 		return err
 	}
-	if err := r.lifecycle.Resolve(ctx, ic); err != nil {
+	if err := r.lifecycle.Resolve(r.ctx, r.ic); err != nil {
 		return err
 	}
 	return r.lifecycle.Start()

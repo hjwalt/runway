@@ -28,7 +28,7 @@ func TestChannelWillStopNormally(t *testing.T) {
 	services := []managed.Service{}
 	services = append(services, fnRuntime)
 	services = append(services, loop)
-	manager := managed.New(services, []managed.Component{}, []managed.Configuration{})
+	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
 
 	startErr := manager.Start()
 	assert.NoError(startErr)
@@ -68,7 +68,7 @@ func TestChannelBrokenInit(t *testing.T) {
 	services := []managed.Service{}
 	services = append(services, fnRuntime)
 	services = append(services, loop)
-	manager := managed.New(services, []managed.Component{}, []managed.Configuration{})
+	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
 
 	startErr := manager.Start()
 	assert.Error(startErr)
@@ -96,7 +96,7 @@ func TestChannelBrokenChannel(t *testing.T) {
 	services := []managed.Service{}
 	services = append(services, fnRuntime)
 	services = append(services, loop)
-	manager := managed.New(services, []managed.Component{}, []managed.Configuration{})
+	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
 
 	startErr := manager.Start()
 	assert.NoError(startErr)
@@ -113,7 +113,7 @@ func TestChannelNilChannel(t *testing.T) {
 
 	services := []managed.Service{}
 	services = append(services, fnRuntime)
-	manager := managed.New(services, []managed.Component{}, []managed.Configuration{})
+	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
 
 	startErr := manager.Start()
 	assert.NoError(startErr)
@@ -142,7 +142,7 @@ func TestChannelBrokenLoop(t *testing.T) {
 	services := []managed.Service{}
 	services = append(services, fnRuntime)
 	services = append(services, loop)
-	manager := managed.New(services, []managed.Component{}, []managed.Configuration{})
+	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
 
 	startErr := manager.Start()
 
