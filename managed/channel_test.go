@@ -12,6 +12,8 @@ import (
 
 func TestChannelWillStopNormally(t *testing.T) {
 	assert := assert.New(t)
+	ctx := context.Background()
+	ic := inverse.NewContainer()
 
 	value := 0
 
@@ -25,10 +27,10 @@ func TestChannelWillStopNormally(t *testing.T) {
 
 	fnRuntime := managed.NewChannel[*TestData](loop)
 
-	services := []managed.Service{}
-	services = append(services, fnRuntime)
-	services = append(services, loop)
-	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
+	managed.AddService(ic, fnRuntime)
+	managed.AddService(ic, loop)
+	manager, managerErr := managed.New(ic, ctx)
+	assert.NoError(managerErr)
 
 	startErr := manager.Start()
 	assert.NoError(startErr)
@@ -51,6 +53,8 @@ func TestChannelWillStopNormally(t *testing.T) {
 
 func TestChannelBrokenInit(t *testing.T) {
 	assert := assert.New(t)
+	ctx := context.Background()
+	ic := inverse.NewContainer()
 
 	value := 0
 
@@ -65,10 +69,10 @@ func TestChannelBrokenInit(t *testing.T) {
 
 	fnRuntime := managed.NewChannel[*TestData](loop)
 
-	services := []managed.Service{}
-	services = append(services, fnRuntime)
-	services = append(services, loop)
-	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
+	managed.AddService(ic, fnRuntime)
+	managed.AddService(ic, loop)
+	manager, managerErr := managed.New(ic, ctx)
+	assert.NoError(managerErr)
 
 	startErr := manager.Start()
 	assert.Error(startErr)
@@ -79,6 +83,8 @@ func TestChannelBrokenInit(t *testing.T) {
 
 func TestChannelBrokenChannel(t *testing.T) {
 	assert := assert.New(t)
+	ctx := context.Background()
+	ic := inverse.NewContainer()
 
 	value := 0
 
@@ -93,10 +99,10 @@ func TestChannelBrokenChannel(t *testing.T) {
 
 	fnRuntime := managed.NewChannel[*TestData](loop)
 
-	services := []managed.Service{}
-	services = append(services, fnRuntime)
-	services = append(services, loop)
-	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
+	managed.AddService(ic, fnRuntime)
+	managed.AddService(ic, loop)
+	manager, managerErr := managed.New(ic, ctx)
+	assert.NoError(managerErr)
 
 	startErr := manager.Start()
 	assert.NoError(startErr)
@@ -106,14 +112,16 @@ func TestChannelBrokenChannel(t *testing.T) {
 
 func TestChannelNilChannel(t *testing.T) {
 	assert := assert.New(t)
+	ctx := context.Background()
+	ic := inverse.NewContainer()
 
 	value := 0
 
 	fnRuntime := managed.NewChannel[*TestData](nil)
 
-	services := []managed.Service{}
-	services = append(services, fnRuntime)
-	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
+	managed.AddService(ic, fnRuntime)
+	manager, managerErr := managed.New(ic, ctx)
+	assert.NoError(managerErr)
 
 	startErr := manager.Start()
 	assert.NoError(startErr)
@@ -123,6 +131,8 @@ func TestChannelNilChannel(t *testing.T) {
 
 func TestChannelBrokenLoop(t *testing.T) {
 	assert := assert.New(t)
+	ctx := context.Background()
+	ic := inverse.NewContainer()
 
 	value := 0
 
@@ -139,10 +149,10 @@ func TestChannelBrokenLoop(t *testing.T) {
 
 	fnRuntime := managed.NewChannel[*TestData](loop)
 
-	services := []managed.Service{}
-	services = append(services, fnRuntime)
-	services = append(services, loop)
-	manager := managed.New(context.Background(), inverse.NewContainer(), services, []managed.Component{}, []managed.Configuration{})
+	managed.AddService(ic, fnRuntime)
+	managed.AddService(ic, loop)
+	manager, managerErr := managed.New(ic, ctx)
+	assert.NoError(managerErr)
 
 	startErr := manager.Start()
 

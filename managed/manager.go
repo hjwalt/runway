@@ -2,40 +2,10 @@ package managed
 
 import (
 	"context"
-	"sync/atomic"
 
 	"github.com/hjwalt/runway/inverse"
-	"github.com/hjwalt/runway/runtime"
 )
 
-const (
-	ConfManagerName             = "ConfManagerName"
-	ConfManagerRuntimeQualifier = "ConfManagerRuntimeQualifier"
-	ConfManagerQualifier        = "ConfManagerQualifier"
-
-	DefaultManagerRuntimeQualifier = "ManagedRuntime"
-)
-
-func New(
-	ctx context.Context,
-	ic inverse.Container,
-	services []Service,
-	components []Component,
-	configurations []Configuration,
-) runtime.Runtime {
-	return &manager{
-		ctx: ctx,
-		ic:  ic,
-		lifecycle: &lifecycle{
-			running:        &atomic.Bool{},
-			services:       services,
-			components:     components,
-			configurations: configurations,
-		},
-	}
-}
-
-// implementation
 type manager struct {
 	ctx       context.Context
 	ic        inverse.Container
@@ -58,5 +28,3 @@ func (r *manager) Stop() {
 		panic(err)
 	}
 }
-
-// Errors
