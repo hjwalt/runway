@@ -1,10 +1,10 @@
 package format_test
 
 import (
+	"log/slog"
 	"testing"
 
 	"github.com/hjwalt/runway/format"
-	"github.com/hjwalt/runway/logger"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -23,7 +23,7 @@ func TestProtojsonFormat(t *testing.T) {
 	vb, em := f.Marshal(v)
 	assert.NoError(em)
 
-	logger.Info(string(vb))
+	slog.Info(string(vb))
 
 	bv, eu := f.Unmarshal(b1)
 	assert.NoError(eu)

@@ -2,6 +2,7 @@ package logger_test
 
 import (
 	"errors"
+	"log/slog"
 	"testing"
 
 	"github.com/hjwalt/runway/logger"
@@ -28,6 +29,11 @@ func TestAllFunctions(t *testing.T) {
 	logger.WarnIfTrue(false, "test", zap.String("test", "test"))
 	logger.ErrorIfErr("test", errors.New("test error"))
 	logger.ErrorIfErr("test", nil)
+
+	slog.Info("test", "key", "value")
+
+	localLogger := slog.With("attr", "attr-val")
+	localLogger.Info("test", "key", "value")
 }
 
 func TestProductionSettings(t *testing.T) {
@@ -45,4 +51,9 @@ func TestProductionSettings(t *testing.T) {
 
 	logger.WarnErr("test", errors.New("test error"))
 	logger.ErrorErr("test", errors.New("test error"))
+
+	slog.Info("test", "key", "value")
+
+	localLogger := slog.With("attr", "attr-val").WithGroup("test").With("groupattr", "group-val")
+	localLogger.Info("test", "key", "value")
 }

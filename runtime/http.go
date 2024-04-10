@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -91,7 +92,7 @@ func (c *HttpRunnable) Start() error {
 		if err != nil {
 			return errors.Join(ErrHttpFailedToInitialiseTls, err)
 		}
-		logger.Info("https enabled")
+		slog.Info("https enabled")
 		c.server.TLSConfig = &tls.Config{
 			Certificates: []tls.Certificate{serverTLSCert},
 		}

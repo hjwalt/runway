@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"log/slog"
+
 	"github.com/hjwalt/runway/trusted"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -11,6 +13,10 @@ var globalLogger *zap.Logger
 var globalSugar *zap.SugaredLogger
 
 func init() {
+	DefaultZap(false, "", zap.DebugLevel)
+}
+
+func Default() {
 	DefaultZap(false, "", zap.DebugLevel)
 }
 
@@ -51,6 +57,8 @@ func DefaultZap(isProduction bool, logFile string, level zapcore.Level) {
 	// skip one level from the helper function
 	logger, err := config.Build(zap.AddCallerSkip(1))
 	logger = trusted.Must(logger, err)
+
+	slog.SetDefault(slog.New(&ZapHandler{config: config, logger: logger}))
 
 	UseZap(logger)
 }

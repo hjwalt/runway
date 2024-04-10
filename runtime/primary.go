@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"errors"
+	"log/slog"
 	"os"
 	"os/signal"
 	"sync/atomic"
@@ -58,7 +59,7 @@ type Primary struct {
 }
 
 func (r *Primary) Start() error {
-	logger.Info("starting up")
+	slog.Info("starting up")
 
 	var startError error
 
@@ -79,15 +80,15 @@ func (r *Primary) Start() error {
 
 	r.started.Store(true)
 
-	logger.Info("start up completed")
+	slog.Info("start up completed")
 	return nil
 }
 
 func (r *Primary) Stop() {
 	defer r.started.Store(false)
-	logger.Info("shutting down")
+	slog.Info("shutting down")
 	r.StopFrom(len(r.runtimes) - 1)
-	logger.Info("shut down completed")
+	slog.Info("shut down completed")
 }
 
 func (r *Primary) Wait() {
